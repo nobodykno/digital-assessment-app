@@ -1,0 +1,8 @@
+packages:
+  - "apps/*"
+  - "packages/*"
+  - "services/*"
+allowBuilds:
+  '@scarf/scarf': false
+  esbuild: false
+  unrs-resolver: false
