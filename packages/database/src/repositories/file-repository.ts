@@ -14,8 +14,8 @@ import type { IFileCreationAttributes } from '../types/file-type.js';
  */
 
 
-const createFile = (file: IFileCreationAttributes, transaction: Transaction) => {
-  return model.File.create(file, { transaction });
+const createFile = (file: IFileCreationAttributes) => {
+  return model.File.create(file);
 };
 
 /**
@@ -26,8 +26,8 @@ const createFile = (file: IFileCreationAttributes, transaction: Transaction) => 
  */
 
 
-const createFIleProcessing = (file: IFileProcessingCreateAttributes, transaction: Transaction) => {
-  return model.FileProcessing.create(file, { transaction });
+const createFIleProcessing = (file: IFileProcessingCreateAttributes) => {
+  return model.FileProcessing.create(file);
 };
 
 
@@ -38,14 +38,13 @@ const createFIleProcessing = (file: IFileProcessingCreateAttributes, transaction
  * @param transaction accepts transction
  * 
  */
-const updateFilePath = (fileId: number, path: string, transaction?: Transaction) =>
+const updateFilePath = (fileId: number, path: string) =>
   model.File.update(
     { path: path },
     {
       where: {
         id: fileId,
       },
-      transaction,
     },
   );
 
@@ -104,14 +103,13 @@ const updateFileThumbnailImage = (fileId: number, thumbnailImage: string) => {
    * updates file status
    */
 
-const updateFileStatus = (fileId: number, status: string, transaction?: Transaction) =>
+const updateFileStatus = (fileId: number, status: string) =>
   model.File.update(
     { status: status },
     {
       where: {
         id: fileId,
-      },
-      transaction,
+      }
     },
   );
 

@@ -1,5 +1,6 @@
 import FILE_CONSTANTS from '@dam/shared/constants'
-import middleware from '../middleware/index.js';
+import logSuccess from '../middleware/success-logger.js';
+
 
 const rabbitLogger = {
   /**
@@ -9,7 +10,7 @@ const rabbitLogger = {
    */
 
   connected(url: string) {
-    middleware.logSuccess({
+   logSuccess({
       module: FILE_CONSTANTS.MESSAGES.MODULE.RABBIT_LOGGER,
       action: FILE_CONSTANTS.MESSAGES.ACTION.CONNECTION_SUCCESS_LOGGER,
       message: FILE_CONSTANTS.MESSAGES.RABBIT_MQ.CONNECTED_SUCCESSFULLY,
@@ -26,7 +27,7 @@ const rabbitLogger = {
    */
 
   connectedQueue(queue: string) {
-    middleware.logSuccess({
+   logSuccess({
       module: FILE_CONSTANTS.MESSAGES.MODULE.RABBIT_LOGGER,
       action: FILE_CONSTANTS.MESSAGES.ACTION.CONNECT_TO_RABBIT_QUEUE,
       message: FILE_CONSTANTS.MESSAGES.RABBIT_MQ.CONNECTED_QUEUE_SUCCESSFULLY,
@@ -43,7 +44,7 @@ const rabbitLogger = {
    */
 
   publishMessageSuccessfully(message: string) {
-    middleware.logSuccess({
+   logSuccess({
       module: FILE_CONSTANTS.MESSAGES.MODULE.RABBIT_LOGGER,
       action: FILE_CONSTANTS.MESSAGES.ACTION.PUBLISHED_RABBIT_QUEUE_SUCCESS,
       message: FILE_CONSTANTS.MESSAGES.RABBIT_MQ.PUBLISHED_TASK_SUCCESSFULLY,
@@ -60,7 +61,7 @@ const rabbitLogger = {
    */
 
   consumeMessageSuccessfully(message: string) {
-    middleware.logSuccess({
+   logSuccess({
       module: FILE_CONSTANTS.MESSAGES.MODULE.RABBIT_LOGGER,
       action: FILE_CONSTANTS.MESSAGES.ACTION.CONSUME_RABBIT_QUEUE_SUCCESS,
       message: FILE_CONSTANTS.MESSAGES.RABBIT_MQ.CONSUME_TASK_SUCCESSFULLY,

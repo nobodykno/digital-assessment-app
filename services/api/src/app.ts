@@ -1,31 +1,32 @@
 import cors from 'cors';
-import express from 'express';
-import './models/index.js';
+import express, { type Express } from 'express';
+import '@dam/database/models';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 
-import config from './config/index.js';
 import swaggerSpec from './config/swagger.js';
-import middleware from './middleware/index.js';
 import mainRoute from './route/main-route.js';
-import service from './service/index.js';
+import corsOptions from './middleware/cors.js';
+import globalRateLimiter from './middleware/rate-limiter.js';
+import morganMiddleware from './middleware/morgan.js';
+import globalErrorHandler from './middleware/global-error.js';
 
-const app = express();
 
-app.use(cors(middleware.corsOptions));
+const app: Express = express();
 
-await service.rabbitmq.connectRabbitMQ(config.rabbitMQQueues.image);
-await service.rabbitmq.connectRabbitMQ(config.rabbitMQQueues.video);
+app.use(cors(corsOptions));
+
+
 
 app.use(express.json());
 
 app.use(helmet());
 
 if (process.env.NODE_ENV !== 'test') {
-  app.use(middleware.globalRateLimiter);
+  app.use(globalRateLimiter);
 }
 
-app.use(middleware.morganMiddleware);
+app.use(morganMiddleware);
 //Swagger doc
 
 app.use(
@@ -46,6 +47,6 @@ app.get('/', (req, res) => {
   });
 });
 
-app.use(middleware.globalErrorHandler);
+app.use(globalErrorHandler);
 
 export default app;

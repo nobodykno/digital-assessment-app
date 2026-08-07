@@ -2,8 +2,11 @@ import { Router, raw } from 'express';
 
 import controller from '../controller/index.js';
 import verifyToken from '../middleware/auth-token.js';
-import middleware from '../middleware/index.js';
 import schema from '../validators/index.js';
+import { uploadMiddleware } from '../middleware/uploader.js';
+import authenticateUser from '../middleware/user-owner.js';
+import validate from '../middleware/validate.js';
+import { IFileParams } from '../dto/request/file-request-dto.js';
 
 const router: Router = Router({ mergeParams: true });
 /**
@@ -42,7 +45,7 @@ const router: Router = Router({ mergeParams: true });
 router.post(
   '/', 
   verifyToken,
-  middleware.uploadMiddleware, 
+  uploadMiddleware, 
   controller.FileController.uploadFiles);
 
 
@@ -111,9 +114,9 @@ router.get('/count',
 router.delete(
   '/:fileId',
   verifyToken,
-  middleware.authenticateUser,
-  middleware.validate(schema.fileValidators.validateFileIdSchema),
-  controller.FileController.deleteFile,
+ authenticateUser,
+ validate(schema.fileValidators.validateFileIdSchema),
+  controller.FileController.deleteFile
 );
 
 /**
@@ -149,7 +152,7 @@ router.delete(
 router.post(
   '/init',
   verifyToken,
-  middleware.validate(schema.fileValidators.initFileSchema),
+ validate(schema.fileValidators.initFileSchema),
   controller.FileController.initUploadFiles,
 );
 
@@ -203,7 +206,7 @@ router.post(
 router.put(
   '/:fileId/:processingId/:partNumber',
   verifyToken,
-  middleware.authenticateUser,
+ authenticateUser,
   raw({
     type: 'application/octet-stream',
     limit: '10gb',
@@ -253,8 +256,8 @@ router.put(
 router.post(
   '/:fileId/:processingId/complete',
   verifyToken,
-  middleware.authenticateUser,
-  middleware.validate(schema.fileValidators.completeUploadSchema),
+ authenticateUser,
+ validate(schema.fileValidators.completeUploadSchema),
   controller.FileController.completeUpload,
 );
 /**
@@ -293,8 +296,8 @@ router.post(
 router.get(
   '/:fileId/:quality/download/video',
   verifyToken,
-  middleware.authenticateUser,
-  middleware.validate(schema.fileValidators.downloadVideoFileSchema),
+ authenticateUser,
+ validate(schema.fileValidators.downloadVideoFileSchema),
   controller.FileController.downloadVideo,
 );
 
@@ -329,8 +332,8 @@ router.get(
 router.get(
   '/:fileId/download/file',
   verifyToken,
-  middleware.authenticateUser,
-  middleware.validate(schema.fileValidators.downloadFileSchema),
+ authenticateUser,
+ validate(schema.fileValidators.downloadFileSchema),
   controller.FileController.downloadFile,
 );
 
@@ -363,8 +366,8 @@ router.get(
 router.get(
   '/:fileId/status',
   verifyToken,
-  middleware.authenticateUser,
-  middleware.validate(schema.fileValidators.validateFileIdSchema),
+ authenticateUser,
+ validate(schema.fileValidators.validateFileIdSchema),
   controller.FileController.getFileStatus,
 );
 
@@ -409,7 +412,7 @@ router.get(
 
 router.get('/:type',
   verifyToken,
-  middleware.validate(schema.fileValidators.getFileTypeParams),
+ validate(schema.fileValidators.getFileTypeParams),
   controller.FileController.getFiles);
   
 export default router;

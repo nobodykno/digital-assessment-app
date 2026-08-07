@@ -1,6 +1,6 @@
 import FILE_CONSTANTS from '@dam/shared/constants'
 import logger from '../logger/index.js';
-import model from '../models/index.js';
+import model from '@dam/database/models'
 
 import { AppError } from './app-error.js';
 

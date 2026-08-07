@@ -1,4 +1,4 @@
-
+import type { ParamsDictionary } from 'express-serve-static-core';
 
 /**
  * DTO for upload file request
@@ -114,7 +114,7 @@ export interface IDownloadFileRequestDto {
 /**
  * DTO for  upload part params
  */
-export interface IUploadPartParams  {
+export interface IUploadPartParams extends ParamsDictionary {
   fileId: string;
   partNumber: string;
   processingId: string;
@@ -123,7 +123,7 @@ export interface IUploadPartParams  {
 /**
  * DTO for complete upload params
  */
-export interface ICompleteUploadPartParams  {
+export interface ICompleteUploadPartParams extends ParamsDictionary {
   fileId: string;
   processingId: string;
 }
@@ -132,7 +132,7 @@ export interface ICompleteUploadPartParams  {
  * DTO for file params
  */
 
-export interface IFileParams {
+export interface IFileParams extends ParamsDictionary {
   fileId: string;
 }
 
@@ -140,7 +140,7 @@ export interface IFileParams {
  * DTO for fileType params
  */
 
-export interface IFileTypeParams  {
+export interface IFileTypeParams extends ParamsDictionary {
   type: string;
 }
 
@@ -148,7 +148,7 @@ export interface IFileTypeParams  {
  * DTO for download video params
  */
 
-export interface IDownloadParams  {
+export interface IDownloadParams extends ParamsDictionary {
   fileId: string;
   quality: string;
 }
@@ -157,7 +157,7 @@ export interface IDownloadParams  {
  * DTO for download file params
  */
 
-export interface IDownloadFileParams  {
+export interface IDownloadFileParams extends ParamsDictionary {
   fileId: string;
 }
 

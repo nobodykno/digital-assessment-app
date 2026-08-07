@@ -18,7 +18,10 @@ export interface ICompleteMultipartUpload {
   bucket: string;
   key: string;
   uploadId: string;
-  parts: CompletedPart[];
+  parts: {
+    PartNumber: number;
+    ETag: string;
+  }[];
 }
 
 export interface IAbortMultipartUpload {

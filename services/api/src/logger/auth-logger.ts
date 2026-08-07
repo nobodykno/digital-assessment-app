@@ -1,5 +1,5 @@
 import FILE_CONSTANTS from '@dam/shared/constants'
-import middleware from '../middleware/index.js';
+import logSuccess from '../middleware/success-logger.js';
 
 const authLogger = {
   /**
@@ -7,7 +7,7 @@ const authLogger = {
    * @param email
    */
   login(email: string) {
-    middleware.logSuccess({
+  logSuccess({
       module: FILE_CONSTANTS.MESSAGES.MODULE.AUTH,
       action: FILE_CONSTANTS.MESSAGES.ACTION.REGISTER,
       message: FILE_CONSTANTS.MESSAGES.AUTH.LOGIN_SUCCESS,
@@ -23,7 +23,7 @@ const authLogger = {
    */
 
   register(email: string) {
-    middleware.logSuccess({
+   logSuccess({
       module: FILE_CONSTANTS.MESSAGES.MODULE.AUTH,
       action: FILE_CONSTANTS.MESSAGES.ACTION.LOGIN,
       message: FILE_CONSTANTS.MESSAGES.AUTH.USER_REGISTERED,

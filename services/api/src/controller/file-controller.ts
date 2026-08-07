@@ -133,22 +133,20 @@ export const getFiles = async (
  * @returns JSON response indicating the deletion status.
  */
 
-export const deleteFile =  async (
+export const deleteFile = async (
   req: Request<IFileParams, IDeleteFileResponseDto, IDeleteFileRequestDto>,
   res: Response<IDeleteFileResponseDto>,
   next: NextFunction,
-) => {
+): Promise<void> => {
   try {
-
-    const request:IDeleteFileRequestDto = {
+    const request: IDeleteFileRequestDto = {
       fileId: Number(req.params.fileId),
     };
 
     const response = await service.file.deleteFileService(request);
 
-
-
-    return res.status(FILE_CONSTANTS.HTTP_STATUS.OK).json(response);
+    res.status(FILE_CONSTANTS.HTTP_STATUS.OK).json(response);
+    return;
   } catch (error) {
     next(error);
   }

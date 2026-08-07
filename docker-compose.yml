@@ -1,0 +1,62 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:17
+    container_name: dam-postgres
+
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mindfire
+      POSTGRES_DB: dam_api
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: services/api/Dockerfile
+
+    container_name: dam-api
+
+    restart: unless-stopped
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+    env_file:
+      - .env.development
+
+    ports:
+      - "5001:5001"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+
+    container_name: dam-web
+
+    restart: unless-stopped
+
+    depends_on:
+      - api
+
+    ports:
+      - "5173:80"
+
+volumes:
+  postgres-data:

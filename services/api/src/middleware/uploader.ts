@@ -5,7 +5,7 @@ import busboy from 'busboy';
 import FILE_CONSTANTS from '@dam/shared/constants'
 import logger from '../logger/index.js';
 import objectNameDirectory from '../object/dam-object.js';
-import storageService from '../service/storage-service.js';
+import serviceStorage from '@dam/shared/storage';
 
 import { AppError } from './app-error.js';
 
@@ -50,9 +50,9 @@ export const uploadMiddleware = (req: Request, res: Response, next: NextFunction
     }
 
     uploads.push(
-      storageService
+      serviceStorage.storageService
         .upload(
-          getobjectName(req.user?.id, filename, mimeType),
+          getobjectName(Number(req.user?.id), filename, mimeType),
           file, // Readable stream
           mimeType,
           filename, // Original filename

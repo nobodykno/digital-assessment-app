@@ -1,4 +1,5 @@
 import logs from '@dam/shared/logs';
+import { ILog } from '../dto/logs/logs-dto.js';
 
 
 /**

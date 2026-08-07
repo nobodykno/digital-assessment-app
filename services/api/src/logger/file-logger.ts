@@ -1,5 +1,6 @@
 import FILE_CONSTANTS from '@dam/shared/constants'
-import middleware from '../middleware/index.js';
+import logSuccess from '../middleware/success-logger.js';
+
 
 const fileLogger = {
   /**
@@ -10,7 +11,7 @@ const fileLogger = {
    */
 
   uploaded(user_id: number) {
-    middleware.logSuccess({
+   logSuccess({
       module: FILE_CONSTANTS.MESSAGES.MODULE.FILE,
       action: FILE_CONSTANTS.MESSAGES.ACTION.UPLOAD,
       message: FILE_CONSTANTS.MESSAGES.FILE.UPLOAD_SUCCESS,
@@ -27,7 +28,7 @@ const fileLogger = {
    */
 
   initUpload(user_id: number, fileId: number) {
-    middleware.logSuccess({
+   logSuccess({
       module: FILE_CONSTANTS.MESSAGES.MODULE.FILE,
       action: FILE_CONSTANTS.MESSAGES.ACTION.UPLOAD,
       message: FILE_CONSTANTS.MESSAGES.FILE.FILE_UPLOAD_INITIATE_SUCCESS,
@@ -45,7 +46,7 @@ const fileLogger = {
    */
 
   completePartUpload(user_id: number, fileId: number) {
-    middleware.logSuccess({
+   logSuccess({
       module: FILE_CONSTANTS.MESSAGES.MODULE.FILE,
       action: FILE_CONSTANTS.MESSAGES.ACTION.UPLOAD,
       message: FILE_CONSTANTS.MESSAGES.FILE.FILE_PART_SUCCESS,
@@ -62,7 +63,7 @@ const fileLogger = {
    */
 
   deleted(fileId: number) {
-    middleware.logSuccess({
+   logSuccess({
       module: FILE_CONSTANTS.MESSAGES.MODULE.FILE,
       action: FILE_CONSTANTS.MESSAGES.ACTION.CREATE,
       message: FILE_CONSTANTS.MESSAGES.FILE.DELETE_SUCCESS,
@@ -77,7 +78,7 @@ const fileLogger = {
    * @param count
    */
   fetched(userId: number, count: number) {
-    middleware.logSuccess({
+   logSuccess({
       module: FILE_CONSTANTS.MESSAGES.MODULE.FILE,
       action: FILE_CONSTANTS.MESSAGES.ACTION.GET,
       message: FILE_CONSTANTS.MESSAGES.FILE.FETCH_SUCCESS,
@@ -89,7 +90,7 @@ const fileLogger = {
   },
 
   fetchedFileCount(userId: number) {
-    middleware.logSuccess({
+   logSuccess({
       module: FILE_CONSTANTS.MESSAGES.MODULE.FILE,
       action: FILE_CONSTANTS.MESSAGES.ACTION.GET,
       message: FILE_CONSTANTS.MESSAGES.FILE.FETCH_SUCCESS_COUNT,

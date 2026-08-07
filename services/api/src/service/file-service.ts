@@ -36,9 +36,9 @@ import type {
   IUploadFileResponseDto,
   IUploadPartResponseDto,
 } from '../dto/response/file-response-dto.js';
-import type { IFileProcessingCreateAttributes } from '../types/file-processing-type.js';
-import type types from '@dam/database/types';
+
 import type { Transaction } from 'sequelize';
+import shared from '@dam/shared';
 
 /**
  *
@@ -83,7 +83,7 @@ export const uploadFilesService = async (
 
   for (const file of createdFiles) {
     if (file.mime_type.startsWith('image/')) {
-      service.rabbitmq.publishMessage(rabbitMQQueues.image, {
+      shared.rabbitmq.rabbitmqService.publishMessage(shared.rabbitmq.rabbitMQQueues.image, {
         fileId: file.id,
         userId: request.userId,
         objectName: file.path,
@@ -225,7 +225,7 @@ export const deleteFileService = async(
     );
   }
 
-  await service.storageService.deleteObject(fileData.path);
+  await serviceStorage.storageService.deleteObject(fileData.path);
 
   await fileData.destroy();
 
@@ -305,10 +305,9 @@ export const initUpload = async (
     );
   }
 
-  const transaction = await sequelize.transaction();
 
   try {
-    const payload: IFileCreationAttributes = {
+    const payload = {
       user_id: request.userId,
       name: request.fileName,
       file_name: request.fileName,
@@ -319,16 +318,16 @@ export const initUpload = async (
       status: FILE_CONSTANTS.MESSAGES.FILE_STATUS.PENDING,
     };
 
-    const file = await repository.fileRepository.createFile(payload, transaction);
+    const file = await repository.fileRepository.createFile(payload);
 
     // Step 2: Generate object path
     const objectName = objectNameDirectory.generateVIdeo(request.userId, file.id, request.fileName);
 
     // Step 3: Create multipart upload in MinIO
-    return updateDbforInitUpload(request, transaction, objectName, file.id);
+    return updateDbforInitUpload(request, objectName, file.id);
   } catch (err) {
     console.log(err);
-    await transaction.rollback();
+
 
     logger.logError({
       module: FILE_CONSTANTS.MESSAGES.MODULE.FILE_SERVICE_ERROR,
@@ -355,37 +354,36 @@ export const initUpload = async (
 
 const updateDbforInitUpload = async (
   request: IInitUploadRequestDto,
-  transaction: Transaction,
   objectName: string,
   id: number,
 ): Promise<IInitUploadResponseDto> => {
-  const command = await config.s3Client.send(
-    new CreateMultipartUploadCommand({
-      Bucket: process.env.MINIO_BUCKET!,
-      Key: objectName,
-      ContentType: request.mimeType,
+
+  const command = await serviceStorage.s3Service.initMultipartUpload(
+    ({
+      bucket: process.env.MINIO_BUCKET!,
+      key: objectName,
+      contentType: request.mimeType,
     }),
   );
 
-  if (!command.UploadId) {
+  if (!command) {
     throw new AppError(
       FILE_CONSTANTS.MESSAGES.FILE.INVALID_FILE,
       FILE_CONSTANTS.HTTP_STATUS.BAD_REQUEST,
     );
   }
 
-  await repository.fileRepository.updateFilePath(id, objectName, transaction);
+  await repository.fileRepository.updateFilePath(id, objectName);
 
-  const payload: IFileProcessingCreateAttributes = {
+  const payload = {
     file_id: id,
-    upload_id: command.UploadId,
+    upload_id: command,
     status: 'INITIATED',
     path: objectName,
   };
 
-  const fileProcessing = await repository.fileRepository.createFIleProcessing(payload, transaction);
+  const fileProcessing = await repository.fileRepository.createFIleProcessing(payload);
 
-  await transaction.commit();
 
   const response: IInitUploadResponseDto = {
     message: FILE_CONSTANTS.MESSAGES.FILE.FILE_UPLOAD_INITIATE_SUCCESS,
@@ -419,17 +417,17 @@ export const uploadPart = async (
     );
   }
 
-  const command = await config.s3Client.send(
-    new UploadPartCommand({
-      Bucket: process.env.MINIO_BUCKET!,
-      Key: fileProcessing.path,
-      UploadId: fileProcessing.upload_id,
-      PartNumber: request.partNumber,
-      Body: request.buffer,
-    }),
+  const command = await serviceStorage.s3Service.uploadPart(
+   {
+      bucket: process.env.MINIO_BUCKET!,
+      key: fileProcessing.path,
+      uploadId: fileProcessing.upload_id,
+      partNumber: request.partNumber,
+      body: request.buffer!,
+    },
   );
 
-  if (!command.ETag) {
+  if (!command) {
     throw new Error('Failed to upload file part.');
   }
 
@@ -440,7 +438,7 @@ export const uploadPart = async (
 
   const response: IUploadPartResponseDto = {
     partNumber: request.partNumber,
-    etag: command.ETag,
+    etag: command,
   };
 
   return response;
@@ -472,18 +470,17 @@ export const completeUpload = async (
     );
   }
 
-  await config.s3Client.send(
-    new CompleteMultipartUploadCommand({
-      Bucket: process.env.MINIO_BUCKET!,
-      Key: fileProcessing.path,
-      UploadId: fileProcessing.upload_id,
-      MultipartUpload: {
-        Parts: request.parts.map((part) => ({
+  await serviceStorage.s3Service.completeMultipartUpload(
+   {
+      bucket: process.env.MINIO_BUCKET!,
+      key: fileProcessing.path,
+      uploadId: fileProcessing.upload_id,
+        parts: request.parts.map((part) => ({
           PartNumber: part.partNumber,
           ETag: part.etag,
         })),
-      },
-    }),
+      
+    },
   );
 
   return updateDbforCompleteUpload(request, fileProcessing.path);
@@ -499,7 +496,6 @@ export const completeUpload = async (
 
 const updateDbforCompleteUpload = async (request: ICompleteUploadRequestDto, path: string) => {
 
-  console.log('request_service', request);
   await repository.fileRepository.updateFileProcessingStatus(
     request.processingId,
     FILE_CONSTANTS.MESSAGES.FILE_STATUS.COMPLETED,
@@ -511,7 +507,7 @@ const updateDbforCompleteUpload = async (request: ICompleteUploadRequestDto, pat
 
   // Publish thumbnail generation job
 
-  service.rabbitmq.publishMessage(rabbitMQQueues.video, {
+  shared.rabbitmq.rabbitmqService.publishMessage(shared.rabbitmq.rabbitMQQueues.video, {
     type: 'thumbnail',
     fileId: request.fileId,
     userId: request.userId,
@@ -579,7 +575,7 @@ export const downloadFiles = async (request: IDownloadFileRequestDto): Promise<I
     );
   }
 
-  const url = await service.storageService.getObjectUrl(file.path, file.name);
+  const url = await serviceStorage.storageService.getObjectUrl(file.path, file.name);
 
   if (!url) {
     logger.logError({
@@ -638,7 +634,7 @@ const updateDbforDownloadVideo = async (request: IDownloadRequestDto, pathName: 
   }
 
   if (objectName) {
-    const url = await service.storageService.getObjectUrl(objectName, request.quality);
+    const url = await serviceStorage.storageService.getObjectUrl(objectName, request.quality);
     const response: IDownloadedResponseDto = {
       message: FILE_CONSTANTS.MESSAGES.FILE.DOWNLOAD_FILE_SUCCESS,
       status: FILE_CONSTANTS.MESSAGES.FILE_STATUS.COMPLETED,
@@ -649,7 +645,7 @@ const updateDbforDownloadVideo = async (request: IDownloadRequestDto, pathName: 
   }
 
   // Publish RabbitMQ job
-  service.rabbitmq.publishMessage(rabbitMQQueues.video, {
+  shared.rabbitmq.rabbitmqService.publishMessage(shared.rabbitmq.rabbitMQQueues.video, {
     type: 'quality',
     fileId: request.fileId,
     userId: request.userId,

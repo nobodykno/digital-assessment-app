@@ -1,5 +1,6 @@
 import FILE_CONSTANTS from '@dam/shared/constants'
-import middleware from '../middleware/index.js';
+import logSuccess from '../middleware/success-logger.js';
+
 
 const workerLogger = {
   /**
@@ -9,7 +10,7 @@ const workerLogger = {
    */
 
   generateVideoThumbnail(url: string) {
-    middleware.logSuccess({
+   logSuccess({
       module: FILE_CONSTANTS.MESSAGES.MODULE.VIDEO_WORKER,
       action: FILE_CONSTANTS.MESSAGES.ACTION.GENERATE_VIDEO_THUMBNAIL,
       message: FILE_CONSTANTS.MESSAGES.WORKER.GENERATE_THUMBNAIL_VIDEO_SUCCESS,
@@ -26,7 +27,7 @@ const workerLogger = {
    */
 
   generateImageThumbnail(url: string) {
-    middleware.logSuccess({
+   logSuccess({
       module: FILE_CONSTANTS.MESSAGES.MODULE.IMAGE_WORKER,
       action: FILE_CONSTANTS.MESSAGES.ACTION.GENERATE_IMAGE_THUMBNAIL,
       message: FILE_CONSTANTS.MESSAGES.WORKER.GENERATE_THUMBNAIL_IMAGE_SUCCESS,
@@ -43,7 +44,7 @@ const workerLogger = {
    */
 
   generateVideoQuality(quality: string) {
-    middleware.logSuccess({
+   logSuccess({
       module: FILE_CONSTANTS.MESSAGES.MODULE.VIDEO_WORKER,
       action: FILE_CONSTANTS.MESSAGES.ACTION.GENERATE_VIDEO_QUALITY,
       message: FILE_CONSTANTS.MESSAGES.WORKER.GENERATE_VIDEO_QUALITY_SUCCESS,
@@ -60,7 +61,7 @@ const workerLogger = {
    */
 
   removeTempFIles(filepath: string, module: string, action: string) {
-    middleware.logSuccess({
+   logSuccess({
       module: module,
       action: action,
       message: FILE_CONSTANTS.MESSAGES.WORKER.REMOVED_TEMP_FILE_SUCCESS,
