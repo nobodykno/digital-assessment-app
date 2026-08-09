@@ -12,6 +12,9 @@
     
     COPY packages ./packages
     COPY services/api ./services/api
+
+
+    
     
     RUN pnpm install --frozen-lockfile
     

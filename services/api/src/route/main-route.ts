@@ -14,4 +14,9 @@ router.use('/api', Route.AuthRoute);
  */
 router.use('/api/files', Route.FileRoute);
 
+
+/**
+ * Parent route to get health
+ */
+router.use('/api/health', Route.HealthRote);
 export default router;

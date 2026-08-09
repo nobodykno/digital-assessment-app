@@ -2,6 +2,9 @@
 
 import type { Readable } from 'stream';
 import minioClient from './minio.js';
+import { IUploadResult } from '../dto/upload-file-dto.js';
+
+
 
 const bucket = process.env.MINIO_BUCKET!;
 
@@ -22,8 +25,8 @@ const storageService = {
     data: Buffer | Readable,
     mimeType: string,
     originalName = objectName,
-  ) {
-    const etag = await minioClient.putObject(
+  ): Promise<IUploadResult> {
+    const uploadResult = await minioClient.putObject(
       bucket,
       objectName,
       data,
@@ -40,7 +43,7 @@ const storageService = {
       originalName,
       mimeType,
       size: stat.size,
-      etag,
+      etag: uploadResult.etag,
       url: objectName,
     };
   },

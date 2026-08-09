@@ -33,12 +33,12 @@ const connectRabbitMQ = async (queue: string): Promise<void> => {
 /**
  * Publish a message to a queue.
  */
-const publishMessage = <T>(queue: string, message: T): void => {
-  const channel = channels.get(queue);
-
-  if (!channel) {
-    throw new Error(`RabbitMQ channel "${queue}" is not initialized.`);
+const publishMessage = async <T>(queue: string, message: T): Promise<void> => {
+  if (!channels.has(queue)) {
+    await connectRabbitMQ(queue);
   }
+
+  const channel = channels.get(queue)!;
 
   channel.sendToQueue(queue, Buffer.from(JSON.stringify(message)), {
     persistent: true,
@@ -52,7 +52,9 @@ const consumeMessage = async <T>(
   queue: string,
   handler: (message: T) => Promise<void>,
 ): Promise<void> => {
+  console.log("Registering consumer...");
   const channel = channels.get(queue);
+  console.log("Message not receoved");
 
   if (!channel) {
     throw new Error(`RabbitMQ channel "${queue}" is not initialized.`);
@@ -62,6 +64,7 @@ const consumeMessage = async <T>(
     if (!msg) {
       return;
     }
+    console.log("Message received");
 
     void processMessage(msg, channel, handler);
   });

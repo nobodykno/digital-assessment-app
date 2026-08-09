@@ -6,7 +6,7 @@ import schema from '../validators/index.js';
 import { uploadMiddleware } from '../middleware/uploader.js';
 import authenticateUser from '../middleware/user-owner.js';
 import validate from '../middleware/validate.js';
-import { IFileParams } from '../dto/request/file-request-dto.js';
+
 
 const router: Router = Router({ mergeParams: true });
 /**

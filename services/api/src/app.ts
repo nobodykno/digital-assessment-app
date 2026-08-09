@@ -41,12 +41,6 @@ app.use('/v1', mainRoute);
 
 
 
-app.get('/', (req, res) => {
-  res.json({
-    message: 'File API',
-  });
-});
-
 app.use(globalErrorHandler);
 
 export default app;
