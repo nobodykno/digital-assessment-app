@@ -8,6 +8,10 @@ import { pipeline } from "node:stream/promises";
 import { IWorkerDTOJob } from '../dto/worker-dto.js';
 import serviceStorage from '@dam/shared/storage';
 import repository from '@dam/database/repositories';
+import logsWorker from "../logger/index.js";
+import logs from "@dam/shared/logs";
+import shared from "@dam/shared";
+
 
 
 
@@ -23,29 +27,23 @@ const generateThumbnail = async (data: IWorkerDTOJob): Promise<string> => {
 
     const objectName = `users/${data.userId}/images/${data.fileId}/thumbnails/video/${crypto.randomUUID()}-${path.basename(tempThumbnailPath)}`
     
-    // objectNameDirectory.generateVideoThumbnail(
-    //   data.userId,
-    //   data.fileId,
-    //   tempThumbnailPath,
-    // );
-
     const stream = fs.createReadStream(tempThumbnailPath);
 
     await serviceStorage.storageService.upload(objectName, stream, 'image/jpeg');
 
     await repository.fileRepository.updateFileThumbnailImage(data.fileId, objectName);
 
-    // logger.workerLogger.generateVideoThumbnail(objectName);
+    logsWorker.workerLogger.generateVideoThumbnail(objectName);
 
     return tempThumbnailPath;
   } catch (error) {
 
     console.log("error",error)
-    // logger.logError({
-    //   module: FILE_CONSTANTS.MESSAGES.MODULE.VIDEO_WORKER,
-    //   action: FILE_CONSTANTS.MESSAGES.ACTION.GENERATE_VIDEO_THUMBNAIL,
-    //   message: FILE_CONSTANTS.MESSAGES.WORKER.GENERATE_THUMBNAIL_VIDEO_SUCCESS,
-    // });
+    logs.logError({
+      module: shared.FILE_CONSTANTS.MESSAGES.MODULE.VIDEO_WORKER,
+      action: shared.FILE_CONSTANTS.MESSAGES.ACTION.GENERATE_VIDEO_THUMBNAIL,
+      message: shared.FILE_CONSTANTS.MESSAGES.WORKER.GENERATE_THUMBNAIL_VIDEO_SUCCESS,
+    });
 
     throw error;
   } finally {
@@ -54,37 +52,36 @@ const generateThumbnail = async (data: IWorkerDTOJob): Promise<string> => {
     if (tempVideoPath) {
       try {
         await unlink(tempVideoPath);
-        console.log("unlink success",tempVideoPath)
-        // logger.workerLogger.removeTempFIles(
-        //   tempVideoPath,
-        //   FILE_CONSTANTS.MESSAGES.MODULE.VIDEO_WORKER,
-        //   FILE_CONSTANTS.MESSAGES.WORKER.REMOVED_TEMP_FILE_SUCCESS,
-        // );
+        logsWorker.workerLogger.removeTempFIles(
+          tempVideoPath,
+          shared.FILE_CONSTANTS.MESSAGES.MODULE.VIDEO_WORKER,
+          shared.FILE_CONSTANTS.MESSAGES.WORKER.REMOVED_TEMP_FILE_SUCCESS,
+        );
 
       } catch(error) {
         console.log("unlink error",error)
-        // logger.logError({
-        //   module: FILE_CONSTANTS.MESSAGES.MODULE.VIDEO_WORKER,
-        //   action: FILE_CONSTANTS.MESSAGES.ACTION.GENERATE_VIDEO_THUMBNAIL,
-        //   message: FILE_CONSTANTS.MESSAGES.WORKER.REMOVED_TEMP_FILE_FAIL,
-        // });
+        logs.logError({
+          module: shared.FILE_CONSTANTS.MESSAGES.MODULE.VIDEO_WORKER,
+          action: shared.FILE_CONSTANTS.MESSAGES.ACTION.GENERATE_VIDEO_THUMBNAIL,
+          message: shared.FILE_CONSTANTS.MESSAGES.WORKER.REMOVED_TEMP_FILE_FAIL,
+        });
       }
     }
 
     if (tempThumbnailPath) {
       try {
         await unlink(tempThumbnailPath);
-        // logger.workerLogger.removeTempFIles(
-        //   tempThumbnailPath,
-        //   FILE_CONSTANTS.MESSAGES.MODULE.VIDEO_WORKER,
-        //   FILE_CONSTANTS.MESSAGES.WORKER.REMOVED_TEMP_FILE_SUCCESS,
-        // );
+        logsWorker.workerLogger.removeTempFIles(
+          tempThumbnailPath,
+          shared.FILE_CONSTANTS.MESSAGES.MODULE.VIDEO_WORKER,
+          shared.FILE_CONSTANTS.MESSAGES.WORKER.REMOVED_TEMP_FILE_SUCCESS,
+        );
       } catch {
-        // logger.logError({
-        //   module: FILE_CONSTANTS.MESSAGES.MODULE.VIDEO_WORKER,
-        //   action: FILE_CONSTANTS.MESSAGES.ACTION.GENERATE_VIDEO_THUMBNAIL,
-        //   message: FILE_CONSTANTS.MESSAGES.WORKER.REMOVED_TEMP_FILE_FAIL,
-        // });
+        logs.logError({
+          module: shared.FILE_CONSTANTS.MESSAGES.MODULE.VIDEO_WORKER,
+          action: shared.FILE_CONSTANTS.MESSAGES.ACTION.GENERATE_VIDEO_THUMBNAIL,
+          message: shared.FILE_CONSTANTS.MESSAGES.WORKER.REMOVED_TEMP_FILE_FAIL,
+        });
       }
     }
   }
