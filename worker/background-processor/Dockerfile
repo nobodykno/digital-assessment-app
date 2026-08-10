@@ -35,6 +35,8 @@ ENV NODE_ENV=production
 
 RUN corepack enable
 
+RUN apk add --no-cache ffmpeg
+
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 COPY tsconfig.base.json ./
 

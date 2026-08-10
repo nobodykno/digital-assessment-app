@@ -1,14 +1,13 @@
 services:
+
   postgres:
     image: postgres:17
     container_name: dam-postgres
 
     restart: unless-stopped
 
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mindfire
-      POSTGRES_DB: dam_api
+    env_file:
+      - .env.development
 
     ports:
       - "5433:5432"
@@ -22,11 +21,15 @@ services:
       timeout: 5s
       retries: 10
 
+
   rabbitmq:
     image: rabbitmq:4-management
     container_name: dam-rabbitmq
 
     restart: unless-stopped
+
+    env_file:
+      - .env.development
 
     ports:
       - "5672:5672"
@@ -38,6 +41,7 @@ services:
       timeout: 5s
       retries: 10
 
+
   minio:
     image: minio/minio
     container_name: dam-minio
@@ -46,9 +50,8 @@ services:
 
     command: server /data --console-address ":9001"
 
-    environment:
-      MINIO_ROOT_USER: paramjit
-      MINIO_ROOT_PASSWORD: MyStrongPassword@123
+    env_file:
+      - .env.development
 
     ports:
       - "9000:9000"
@@ -58,12 +61,19 @@ services:
       - minio-data:/data
 
     healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9000/minio/health/live || exit 1"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl -f http://localhost:9000/minio/health/live || exit 1"
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
 
+
   api:
+    image: dam-api:latest
+
     build:
       context: .
       dockerfile: services/api/Dockerfile
@@ -99,7 +109,10 @@ services:
       retries: 10
       start_period: 30s
 
+
   worker:
+    image: dam-background-processor:latest
+
     build:
       context: .
       dockerfile: worker/background-processor/Dockerfile
@@ -121,7 +134,13 @@ services:
     env_file:
       - .env.development
 
+    environment:
+      WORKER_TYPE: video
+
+
   web:
+    image: dam-web:latest
+
     build:
       context: .
       dockerfile: apps/web/Dockerfile
@@ -136,6 +155,7 @@ services:
 
     ports:
       - "5173:80"
+
 
 volumes:
   postgres-data:

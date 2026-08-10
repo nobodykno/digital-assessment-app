@@ -52,14 +52,12 @@ const consumeMessage = async <T>(
   queue: string,
   handler: (message: T) => Promise<void>,
 ): Promise<void> => {
-  console.log("Registering consumer...");
   const channel = channels.get(queue);
-  console.log("Message not receoved");
-
   if (!channel) {
     throw new Error(`RabbitMQ channel "${queue}" is not initialized.`);
   }
 
+  await channel.prefetch(1);
   await channel.consume(queue, (msg: ConsumeMessage | null): void => {
     if (!msg) {
       return;

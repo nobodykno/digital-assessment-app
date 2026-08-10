@@ -1,0 +1,189 @@
+services:
+
+  postgres:
+    image: postgres:17
+
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mindfire
+      POSTGRES_DB: dam_api
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+    networks:
+      - dam-network
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+
+  rabbitmq:
+    image: rabbitmq:4-management
+
+    environment:
+      RABBITMQ_DEFAULT_USER: paramjit
+      RABBITMQ_DEFAULT_PASS: MyStrongPassword@123
+      RABBITMQ_DEFAULT_VHOST: dam
+
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+    networks:
+      - dam-network
+
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+
+  minio:
+    image: minio/minio
+
+    command: server /data --console-address ":9001"
+
+    environment:
+      MINIO_ROOT_USER: paramjit
+      MINIO_ROOT_PASSWORD: MyStrongPassword@123
+
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+
+    volumes:
+      - minio-data:/data
+
+    networks:
+      - dam-network
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -f http://localhost:9000/minio/health/live || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+
+  api:
+    image: dam-api:latest
+
+    env_file:
+      - .env.development
+
+    ports:
+      - "5001:5001"
+
+    networks:
+      - dam-network
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:5001/v1/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+
+  image-worker:
+    image: dam-background-processor:latest
+
+    env_file:
+      - .env.development
+
+    environment:
+      WORKER_TYPE: image
+
+    networks:
+      - dam-network
+
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+
+  video-worker:
+    image: dam-background-processor:latest
+
+    env_file:
+      - .env.development
+
+    environment:
+      WORKER_TYPE: video
+
+    networks:
+      - dam-network
+
+    deploy:
+      replicas: 5
+      restart_policy:
+        condition: on-failure
+
+
+  web:
+    image: dam-web:latest
+
+    ports:
+      - "5173:80"
+
+    networks:
+      - dam-network
+
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+
+
+volumes:
+
+  postgres-data:
+    external: true
+    name: digital-assessment-app_postgres-data
+  minio-data:
+    external: true
+    name: digital-assessment-app_minio-data
+
+
+networks:
+  dam-network:
+    external: true
+    name: dam-network
