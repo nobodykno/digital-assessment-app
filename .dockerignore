@@ -1,0 +1,10 @@
+node_modules
+.pnpm-store
+.git
+.gitignore
+dist
+coverage
+
+**/test
+**/*.test.ts
+**/*.spec.ts
