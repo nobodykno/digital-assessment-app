@@ -20,6 +20,7 @@ dotenv.config({
   path: path.resolve(process.cwd(), "../../.env." + environment),
 });
 
+
 const requiredEnv = ['PORT', 'DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD', 'JWT_SECRET'];
 
 requiredEnv.forEach((key) => {

@@ -1,5 +1,4 @@
 services:
-
   postgres:
     image: postgres:17
     container_name: dam-postgres
@@ -9,18 +8,25 @@ services:
     env_file:
       - .env.development
 
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mindfire
+      POSTGRES_DB: dam_api
+
     ports:
       - "5433:5432"
 
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
+    networks:
+      - dam-network
+
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 5s
       timeout: 5s
       retries: 10
-
 
   rabbitmq:
     image: rabbitmq:4-management
@@ -31,9 +37,17 @@ services:
     env_file:
       - .env.development
 
+    environment:
+      RABBITMQ_DEFAULT_USER: paramjit
+      RABBITMQ_DEFAULT_PASS: "MyStrongPassword@123"
+      RABBITMQ_DEFAULT_VHOST: dam
+
     ports:
       - "5672:5672"
       - "15672:15672"
+
+    networks:
+      - dam-network
 
     healthcheck:
       test: ["CMD-SHELL", "rabbitmq-diagnostics ping"]
@@ -41,17 +55,20 @@ services:
       timeout: 5s
       retries: 10
 
-
   minio:
     image: minio/minio
     container_name: dam-minio
 
     restart: unless-stopped
 
-    command: server /data --console-address ":9001"
-
     env_file:
       - .env.development
+
+    command: server /data --console-address ":9001"
+
+    environment:
+      MINIO_ROOT_USER: paramjit
+      MINIO_ROOT_PASSWORD: "MyStrongPassword@123"
 
     ports:
       - "9000:9000"
@@ -59,6 +76,9 @@ services:
 
     volumes:
       - minio-data:/data
+
+    networks:
+      - dam-network
 
     healthcheck:
       test:
@@ -69,7 +89,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
 
   api:
     image: dam-api:latest
@@ -82,6 +101,9 @@ services:
 
     restart: unless-stopped
 
+    env_file:
+      - .env.development
+
     depends_on:
       postgres:
         condition: service_healthy
@@ -90,11 +112,12 @@ services:
       minio:
         condition: service_healthy
 
-    env_file:
-      - .env.development
-
+    
     ports:
       - "5001:5001"
+
+    networks:
+      - dam-network
 
     healthcheck:
       test:
@@ -109,7 +132,6 @@ services:
       retries: 10
       start_period: 30s
 
-
   worker:
     image: dam-background-processor:latest
 
@@ -121,6 +143,12 @@ services:
 
     restart: unless-stopped
 
+    env_file:
+      - .env.development
+
+    environment:
+      WORKER_TYPE: video
+
     depends_on:
       postgres:
         condition: service_healthy
@@ -131,12 +159,8 @@ services:
       api:
         condition: service_healthy
 
-    env_file:
-      - .env.development
-
-    environment:
-      WORKER_TYPE: video
-
+    networks:
+      - dam-network
 
   web:
     image: dam-web:latest
@@ -156,7 +180,13 @@ services:
     ports:
       - "5173:80"
 
+    networks:
+      - dam-network
 
 volumes:
   postgres-data:
   minio-data:
+
+networks:
+  dam-network:
+    driver: bridge

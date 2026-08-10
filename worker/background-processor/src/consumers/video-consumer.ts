@@ -16,7 +16,7 @@ const startVideoWorker = async (): Promise<void> => {
         break;
 
       case 'quality':
-        // await service.videoQualityService.generateVideoQuality(job);
+        await workerService.videoQualityService.generateVideoQuality(job);
         break;
 
       default:
