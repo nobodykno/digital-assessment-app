@@ -1,34 +1,47 @@
-import './config/env.js';
+import "./config/env.js";
 
-import app from './app.js';
-import validateEnv from './config/validate-env.js';
+import app from "./app.js";
+import validateEnv from "./config/validate-env.js";
+import sequelize from "@dam/database/config";
 
+const PORT = Number(process.env.PORT) || 5000;
 
-validateEnv();
+const connectDatabase = async (): Promise<void> => {
+  const maxRetries = 5;
+  const retryDelay = 5000;
 
-// middleware.validateEnv();
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      await sequelize.sequelize.authenticate();
 
-import sequelize from '@dam/database/config'
+      await sequelize.sequelize.sync();
 
-// await service.rabbitmq.connectRabbitMQ();
-const PORT = process.env.PORT || 5000;
+      return;
+    } catch (error) {
+    
+      if (attempt === maxRetries) {
+        throw error;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, retryDelay));
+    }
+  }
+};
 
 const startServer = async (): Promise<void> => {
   try {
-    // Step 1 — Connect to database
-    await sequelize.sequelize.authenticate();
-    await sequelize.sequelize.sync();
+    // 1. Validate environment variables
+    validateEnv();
 
-    // console.log("✅ Database connected",process.cwd());
-    // const uploadDir = path.join(process.cwd(), "/uploads");
+    // 2. Connect to database
+    await connectDatabase();
 
-    // Step 3 — Start server
+    // 3. Start HTTP server
     app.listen(PORT, () => {
       console.log(`✅ Server running on port ${PORT}`);
     });
   } catch (error) {
-    console.error('❌ Server startup failed:', error);
-
+    console.error("❌ Server startup failed:", error);
     process.exit(1);
   }
 };

@@ -8,11 +8,6 @@ services:
     env_file:
       - .env.development
 
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mindfire
-      POSTGRES_DB: dam_api
-
     ports:
       - "5433:5432"
 
@@ -37,10 +32,7 @@ services:
     env_file:
       - .env.development
 
-    environment:
-      RABBITMQ_DEFAULT_USER: paramjit
-      RABBITMQ_DEFAULT_PASS: "MyStrongPassword@123"
-      RABBITMQ_DEFAULT_VHOST: dam
+
 
     ports:
       - "5672:5672"
@@ -66,9 +58,6 @@ services:
 
     command: server /data --console-address ":9001"
 
-    environment:
-      MINIO_ROOT_USER: paramjit
-      MINIO_ROOT_PASSWORD: "MyStrongPassword@123"
 
     ports:
       - "9000:9000"

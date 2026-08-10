@@ -20,6 +20,10 @@ dotenv.config({
   path: path.resolve(process.cwd(), "../../.env." + environment),
 });
 
+// console.log("DB_HOST:", process.env.DB_HOST);
+// console.log("DB_PORT:", process.env.DB_PORT);
+// console.log("DB_NAME:", process.env.DB_NAME);
+// console.log("DB_USER:", process.env.DB_USER);
 
 const requiredEnv = ['PORT', 'DB_HOST', 'DB_NAME', 'DB_USER', 'DB_PASSWORD', 'JWT_SECRET'];
 
