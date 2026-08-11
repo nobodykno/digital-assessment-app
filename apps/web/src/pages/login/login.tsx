@@ -8,7 +8,7 @@ import useLogin from './useLogin';
  */
 const Login = () => {
   const login = useLogin();
-  console.log('login object:', login);
+ 
 
   return <LoginView {...login} />;
 };

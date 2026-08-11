@@ -6,4 +6,5 @@ packages:
 allowBuilds:
   '@scarf/scarf': false
   esbuild: false
+  msw: true
   unrs-resolver: false
