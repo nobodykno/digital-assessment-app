@@ -6,14 +6,14 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "scripts": {
-    "migrate": "tsx scripts/migrate.ts",
-    "migrate:undo": "tsx scripts/migrate-undo.ts",
+    "migrate": "tsx src/scripts/migrate.ts",
+    "migrate:undo": "tsx src/scripts/migrate-undo.ts",
     "seed": "tsx scripts/seed.ts",
     "seed:undo": "tsx scripts/seed-undo.ts",
     "migrate:test": "NODE_ENV=test tsx src/scripts/migrate.ts",
     "migrate:test:undo": "NODE_ENV=test tsx src/scripts/migrate-undo.ts",
-    "seed:test": "NODE_ENV=test tsx scripts/seed.ts",
-    "seed:test:undo": " NODE_ENV=test tsx scripts/seed-undo.ts",
+    "seed:test": "NODE_ENV=test tsx src/scripts/seed.ts",
+    "seed:test:undo": " NODE_ENV=test tsx src/scripts/seed-undo.ts",
     "build": "tsc -p tsconfig.json",
     "clean": "rm -rf dist"
   },
@@ -52,6 +52,7 @@
     "dotenv": "^17.4.2",
     "pg": "^8.22.0",
     "pg-hstore": "^2.3.4",
+    "bcryptjs": "^3.0.3",
     "sequelize": "^6.37.8",
     "umzug": "^3.8.3"
   }

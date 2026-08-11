@@ -21,7 +21,7 @@ const startWorker = async (): Promise<void> => {
     });
   } catch (error) {
 
-    console.log("errror",error);
+    console.log("error",error);
 
     logger.logError({
       module: "Processing Worker",

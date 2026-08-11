@@ -6,11 +6,6 @@ import MESSAGES from '../constants/message';
  * Check th env file at startup
  */
 
-console.log({
-  VITE_API_URL: import.meta.env.VITE_API_URL,
-  VITE_APP_NAME: import.meta.env.VITE_APP_NAME,
-  VITE_APP_ENV: import.meta.env.VITE_APP_ENV,
-});
 const requiredEnv = [
   'VITE_API_URL',
   'VITE_APP_NAME',

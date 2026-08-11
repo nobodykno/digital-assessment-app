@@ -38,7 +38,6 @@ const generateThumbnail = async (data: IWorkerDTOJob): Promise<string> => {
     return tempThumbnailPath;
   } catch (error) {
 
-    console.log("error",error)
     logs.logError({
       module: shared.FILE_CONSTANTS.MESSAGES.MODULE.VIDEO_WORKER,
       action: shared.FILE_CONSTANTS.MESSAGES.ACTION.GENERATE_VIDEO_THUMBNAIL,
@@ -59,7 +58,6 @@ const generateThumbnail = async (data: IWorkerDTOJob): Promise<string> => {
         );
 
       } catch(error) {
-        console.log("unlink error",error)
         logs.logError({
           module: shared.FILE_CONSTANTS.MESSAGES.MODULE.VIDEO_WORKER,
           action: shared.FILE_CONSTANTS.MESSAGES.ACTION.GENERATE_VIDEO_THUMBNAIL,

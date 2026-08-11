@@ -56,7 +56,7 @@ const uploadPart = async (req: IUploadPartRequestDto): Promise<IUploadPartRespon
     isFormData: true
   };
 
-  console.log(req.chunk);
+ 
 
   return await httpService<IUploadPartResponseDto>(request, req.chunk,);
 };

@@ -16,8 +16,6 @@ const app: Express = express();
 
 app.use(cors(corsOptions));
 
-
-
 app.use(express.json());
 
 app.use(helmet());

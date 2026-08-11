@@ -17,8 +17,7 @@ const corsOptions: cors.CorsOptions = {
       return callback(null, true);
     }
 
-    console.log('CORS_ORIGIN =', process.env.CORS_ORIGIN);
-    console.log('allowedOrigins =', allowedOrigins);
+
 
     if (allowedOrigins.includes(origin)) {
       return callback(null, true);

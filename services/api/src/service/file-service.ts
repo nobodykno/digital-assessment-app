@@ -113,21 +113,6 @@ export const uploadFilesService = async (
 export const getFilesService = async (
   request: IGetFilesRequestDto,
 ): Promise<IGetFilesResponseDto> => {
-  const user = await repository.fileRepository.findOwnerShipFiles(request.userId);
-
-  if (!user) {
-    logger.logError({
-      module: FILE_CONSTANTS.MESSAGES.MODULE.FILE_SERVICE_ERROR,
-      action: FILE_CONSTANTS.MESSAGES.ACTION.SERVICE_FILE_ERROR,
-      message: FILE_CONSTANTS.MESSAGES.AUTH.USER_NOT_FOUND,
-    });
-
-    throw new AppError(
-      FILE_CONSTANTS.MESSAGES.AUTH.USER_NOT_FOUND,
-      FILE_CONSTANTS.HTTP_STATUS.BAD_REQUEST,
-    );
-  }
-
   const { rows: files, count } = await repository.fileRepository.findAllByType(
     request.userId,
     request.type,
@@ -164,20 +149,6 @@ export const getFilesService = async (
 export const getFilesCount = async (
   request: IGetFileCountRequestDto,
 ): Promise<IGetFileCountResponseDto> => {
-  const user = await repository.fileRepository.findOwnerShipFiles(request.userId);
-
-  if (!user) {
-    logger.logError({
-      module: FILE_CONSTANTS.MESSAGES.MODULE.FILE_SERVICE_ERROR,
-      action: FILE_CONSTANTS.MESSAGES.ACTION.SERVICE_FILE_ERROR,
-      message: FILE_CONSTANTS.MESSAGES.AUTH.USER_NOT_FOUND,
-    });
-
-    throw new AppError(
-      FILE_CONSTANTS.MESSAGES.AUTH.USER_NOT_FOUND,
-      FILE_CONSTANTS.HTTP_STATUS.BAD_REQUEST,
-    );
-  }
 
   const filesCount = await repository.fileRepository.getFileCounts(request.userId);
 
