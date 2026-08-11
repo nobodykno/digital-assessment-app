@@ -1,5 +1,4 @@
 
-console.log('🔥 setupTests.ts LOADED');
 import '@testing-library/jest-dom';
 
 import {
@@ -9,9 +8,7 @@ import {
 } from 'vitest';
 
 import { server } from './mocks/server';
-console.log('🔥 setupTests loaded');
 beforeAll(() => {
-  console.log('🔥 MSW server starting');
   server.listen();
 });
 

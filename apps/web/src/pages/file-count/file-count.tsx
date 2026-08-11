@@ -4,8 +4,6 @@ import useFile from './useFile';
 
 const FileCount = () => {
   const fileCount = useFile();
-
-
   return <FileCountView folders={fileCount.folders} loading={fileCount.loading}  />;
 };
 

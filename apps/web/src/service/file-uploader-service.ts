@@ -11,7 +11,6 @@ const uploadFiles = async (
   files: File[],
 ): Promise<IUploadFileResponseDto> => {
   const formData = new FormData();
-
   files.forEach((file) => {
     formData.append('files', file);
   });
@@ -23,7 +22,6 @@ const uploadFiles = async (
     method,
     isFormData: true,
   };
-
   return await httpService<IUploadFileResponseDto>(request, formData);
 };
 

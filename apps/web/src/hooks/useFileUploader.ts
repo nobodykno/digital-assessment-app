@@ -199,7 +199,7 @@ const useFileUploader = (props: IFileUploaderProps) => {
           const response =
             await service.fileService.getFileStatus(fileId);
 
-          if (response.status !== 'COMPLETED') {
+          if (response.status !== 'Completed') {
             clearInterval(interval);
             resolve();
           }
