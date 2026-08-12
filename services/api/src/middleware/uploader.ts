@@ -20,9 +20,11 @@ import type { NextFunction, Request, Response } from 'express';
  * Upload middleware to accept files of given types
  */
 
+
 export const uploadMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   const uploads: Promise<void>[] = [];
-  const uploadedFiles: any[] = [];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const uploadedFiles: any[] = [];
 
   let uploadError: Error | null = null;
 

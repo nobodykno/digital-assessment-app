@@ -164,9 +164,9 @@ export interface IFileStatusResponseDto {
 }
 
 export interface IDownloadResponseDto {
-  message:string,
-  url: string
- }
+message:string,
+url: string
+}
 
 export interface IVideoStatusResponseDto {
   message: string;

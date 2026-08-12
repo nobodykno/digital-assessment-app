@@ -32,8 +32,6 @@ services:
     env_file:
       - .env.development
 
-
-
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -57,7 +55,6 @@ services:
       - .env.development
 
     command: server /data --console-address ":9001"
-
 
     ports:
       - "9000:9000"
@@ -101,7 +98,6 @@ services:
       minio:
         condition: service_healthy
 
-    
     ports:
       - "5001:5001"
 
@@ -121,14 +117,43 @@ services:
       retries: 10
       start_period: 30s
 
-  worker:
+  image-worker:
     image: dam-background-processor:latest
 
     build:
       context: .
       dockerfile: worker/background-processor/Dockerfile
 
-    container_name: dam-worker
+  
+
+    restart: unless-stopped
+
+    env_file:
+      - .env.development
+
+    environment:
+      WORKER_TYPE: image
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+
+    networks:
+      - dam-network
+
+  video-worker:
+    image: dam-background-processor:latest
+
+    build:
+      context: .
+      dockerfile: worker/background-processor/Dockerfile
+
 
     restart: unless-stopped
 
@@ -146,6 +171,35 @@ services:
       minio:
         condition: service_healthy
       api:
+        condition: service_healthy
+
+    networks:
+      - dam-network
+
+  autoscaler:
+    image: dam-worker-autoscaler:latest
+
+    build:
+      context: .
+      dockerfile: autoscaler/worker/Dockerfile
+
+    container_name: dam-autoscaler
+
+    restart: unless-stopped
+
+    env_file:
+      - .env.development
+
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      AUTOSCALER_DRY_RUN: "False"
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    depends_on:
+      rabbitmq:
         condition: service_healthy
 
     networks:

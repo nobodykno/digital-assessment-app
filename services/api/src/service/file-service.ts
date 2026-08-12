@@ -1,9 +1,5 @@
 
 import serviceStorage from '@dam/shared/storage';
-
-import sequelize from '@dam/database'
-import config from '../config/index.js';
-import rabbitmq from '@dam/shared/rabbitmq';
 import FILE_CONSTANTS from '@dam/shared/constants'
 import logger from '../logger/index.js';
 import { AppError } from '../middleware/app-error.js';
@@ -37,7 +33,6 @@ import type {
   IUploadPartResponseDto,
 } from '../dto/response/file-response-dto.js';
 
-import type { Transaction } from 'sequelize';
 import shared from '@dam/shared';
 
 /**

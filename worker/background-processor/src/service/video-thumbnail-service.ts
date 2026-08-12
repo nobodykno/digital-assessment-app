@@ -127,7 +127,7 @@ export const createThumbnail = async (
       ffmpeg.on("close", (code) => {
         if (code === 0) {
           console.log(
-            "✅ Thumbnail created:",
+            "Thumbnail created:",
             thumbnailPath,
           );
       

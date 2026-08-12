@@ -3,7 +3,6 @@ services:
   postgres:
     image: postgres:17
 
-
     env_file:
       - .env.development
 
@@ -30,7 +29,6 @@ services:
 
   rabbitmq:
     image: rabbitmq:4-management
-
 
     env_file:
       - .env.development
@@ -62,7 +60,6 @@ services:
     image: minio/minio
 
     command: server /data --console-address ":9001"
-
 
     env_file:
       - .env.development
@@ -155,7 +152,33 @@ services:
       - dam-network
 
     deploy:
-      replicas: 5
+      replicas: 2
+      restart_policy:
+        condition: on-failure
+
+
+  autoscaler:
+    image: dam-worker-autoscaler:latest
+
+    env_file:
+      - .env.development
+
+    environment:
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      RABBITMQ_VHOST: dam
+      IMAGE_WORKER_SERVICE: dam_image-worker
+      VIDEO_WORKER_SERVICE: dam_video-worker
+      AUTOSCALER_DRY_RUN: "true"
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    networks:
+      - dam-network
+
+    deploy:
+      replicas: 1
       restart_policy:
         condition: on-failure
 
@@ -174,6 +197,7 @@ services:
       restart_policy:
         condition: on-failure
 
+
 volumes:
   postgres-data:
     external: true
@@ -189,7 +213,6 @@ volumes:
 
 
 networks:
-
   dam-network:
     external: true
     name: dam-network

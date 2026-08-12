@@ -7,7 +7,9 @@ import react from 'eslint-plugin-react';
 
 export default tseslint.config(
   {
-    ignores: ['dist'],
+    ignores: ['dist','src/test/**',
+      '**/*.test.ts',
+      '**/*.spec.ts',],
   },
   {
     files: ['**/*.{ts,tsx}'],

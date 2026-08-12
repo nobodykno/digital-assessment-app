@@ -1,0 +1,20 @@
+{
+    "name": "@dam/worker-autoscaler",
+    "version": "1.0.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+      "dev": "tsx src/autoscaler.ts",
+      "build": "tsc -p tsconfig.json",
+      "start": "node dist/autoscaler.js"
+    },
+    "dependencies": {
+      "amqplib": "^0.10.9",
+      "dockerode": "^4.0.9",
+      "@dam/shared": "workspace:*"
+    },
+    "devDependencies": {
+      "@types/amqplib": "^0.10.7",
+      "@types/dockerode": "^3.3.43"
+    }
+  }
