@@ -224,6 +224,9 @@ importers:
       '@eslint/js':
         specifier: ^9.39.0
         version: 9.39.5
+      '@jest/globals':
+        specifier: 29.7.0
+        version: 29.7.0(supports-color@8.1.1)
       '@stylistic/eslint-plugin':
         specifier: ^5.10.0
         version: 5.10.0(eslint@9.39.5(jiti@2.7.0)(supports-color@8.1.1))
