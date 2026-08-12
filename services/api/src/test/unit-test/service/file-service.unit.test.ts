@@ -4,6 +4,8 @@ import repository from '@dam/database/repositories';
 import utils from '../../../utils/index.js';
 import model from '@dam/database/models';
 import serviceStorage from '@dam/shared/storage';
+import FileProcessing from '../../../../../../packages/database/dist/models/file-processing-model.js';
+import { IFileProcessingCreateAttributes } from '../../../../../../packages/database/dist/types/file-processing-type.js';
 
 const bulkCreate = jest.fn() as jest.MockedFunction<
   typeof repository.fileRepository.bulkCreate
@@ -12,6 +14,12 @@ const bulkCreate = jest.fn() as jest.MockedFunction<
 const findAllByType = jest.fn() as jest.MockedFunction<
   typeof repository.fileRepository.findAllByType
 >;
+
+const initMultipartUpload = jest.fn() as jest.MockedFunction<
+  typeof serviceStorage.s3Service.initMultipartUpload
+>;
+
+
 
 const getFileCounts = jest.fn() as jest.MockedFunction<
   typeof repository.fileRepository.getFileCounts
@@ -45,7 +53,9 @@ const updateFileProcessingStatus = jest.fn() as jest.MockedFunction<
   typeof repository.fileRepository.updateFileProcessingStatus
 >;
 
-
+const updateFileStatus = jest.fn() as jest.MockedFunction<
+  typeof repository.fileRepository.updateFileStatus
+>;
 
 const uploadPartMock = jest.fn() as jest.MockedFunction<
   typeof serviceStorage.s3Service.uploadPart
@@ -65,16 +75,11 @@ const findVideoQuality = jest.fn() as jest.MockedFunction<
   typeof repository.videoQualityRepository.findVideoQuality
 >;
 
-const updateFileStatus = jest.fn() as jest.MockedFunction<
-  typeof repository.fileRepository.updateFileStatus
->;
 
 const getObjectUrl = jest.fn() as jest.MockedFunction<
   typeof serviceStorage.storageService.getObjectUrl
 >;
 const generateVIdeo = jest.fn();
-
-const initMultipartUpload = jest.fn();
 
 const deleteObject = jest.fn();
 
@@ -94,7 +99,7 @@ jest.unstable_mockModule('@dam/database/repositories', () => ({
       createFIleProcessing,
       findUploadId,
       updateFileProcessingStatus,
-      
+      updateFileStatus
     },
     videoQualityRepository :{
         findVideoQuality
@@ -103,42 +108,45 @@ jest.unstable_mockModule('@dam/database/repositories', () => ({
 }));
 
 jest.unstable_mockModule('@dam/shared/storage', () => ({
-    default: {
-      storageService: {
-        deleteObject,
-      },
-    },
-  }));
-
-jest.unstable_mockModule('../../../utils/index.js', () => ({
   default: {
-    idValidators: {
-      validateUserId,
+    storageService: {
+      deleteObject,
+      getObjectUrl,
+    },
+
+    s3Service: {
+      uploadPart: uploadPartMock,
+      initMultipartUpload,
+      completeMultipartUpload,
     },
   },
 }));
 
-jest.unstable_mockModule('@dam/shared', () => ({
-  default: {
-    rabbitmq: {
-      rabbitmqService: {
-        publishMessage,
-      },
-      rabbitMQQueues: {
-        image: 'image',
-      },
-    },
-  },
-}));
 
-jest.unstable_mockModule('@dam/shared/storage', () => ({
+  jest.unstable_mockModule('../../../utils/index.js', () => ({
     default: {
-      s3Service: {
-        uploadPart: uploadPartMock,
-        initMultipartUpload,
+      idValidators: {
+        validateUserId,
+        validateFileId,
       },
     },
   }));
+
+  jest.unstable_mockModule('@dam/shared', () => ({
+    default: {
+      rabbitmq: {
+        rabbitmqService: {
+          publishMessage,
+        },
+        rabbitMQQueues: {
+          image: 'image',
+          video: 'video',
+        },
+      },
+    },
+  }));
+
+
 
   jest.unstable_mockModule('../../../object/dam-object.js', () => ({
     default: {
@@ -383,17 +391,34 @@ const { uploadFilesService } =
         status: 'PENDING',
       });
   
+
+      const processing = model.FileProcessing.build({
+        id: 10,
+        file_id: 1,
+        upload_id: 'upload-id-123',
+        status: 'INITIATED',
+        path: 'user/1/video/1/test.mp4',
+      });
+      
+   
       createFile.mockResolvedValue(file);
   
       generateVIdeo.mockReturnValue(
         'user/1/video/1/test.mp4',
       );
   
+      // Mock MinIO multipart upload
+      initMultipartUpload.mockResolvedValue(
+        'upload-id-123',
+      );
+  
+      createFIleProcessing.mockResolvedValue(processing);
 
+      // Mock database update
+      updateFilePath.mockResolvedValue([1]);
   
+      // Mock file processing creation
  
-  
-  
       const result = await initUpload({
         userId: 1,
         fileName: 'test.mp4',
