@@ -46,10 +46,6 @@ const connectRabbitMQ = async (): Promise<
     return connection;
   }
 
-  console.log(
-    `Connecting to RabbitMQ ${rabbitMQHost}:${rabbitMQPort}`,
-  );
-
   connection = await amqp.connect(rabbitMQUrl);
 
   console.log("RabbitMQ connected");
@@ -72,9 +68,6 @@ const connectRabbitMQ = async (): Promise<
 /**
  * Get the number of waiting messages in a queue.
  *
- * If the queue does not exist yet, return 0.
- * This allows the autoscaler to continue running
- * while workers are starting up.
  */
 export const getQueueSize = async (
   queue: string,
@@ -91,22 +84,15 @@ export const getQueueSize = async (
     return queueInfo.messageCount;
   } catch {
     console.warn(
-      `⚠️ Queue "${queue}" does not exist yet. Returning 0.`,
+      `Queue "${queue}" does not exist yet. Returning 0.`,
     );
 
     return 0;
   } finally {
-    /*
-     * checkQueue() causes RabbitMQ to close the
-     * channel when the queue does not exist.
-     *
-     * Therefore, channel.close() may itself throw.
-     * Ignore that error.
-     */
     try {
       await channel.close();
     } catch {
-      // Channel already closed by RabbitMQ.
+      
     }
   }
 };

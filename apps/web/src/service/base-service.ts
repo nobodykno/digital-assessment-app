@@ -11,7 +11,10 @@ const getToken = (): string | null => {
   
 const getHeaders = (isFormData: boolean = false, body:BodyInit) => {
   const headers = new Headers();
-  headers.append('Authorization', `Bearer ${getToken()}`);
+  if(getToken()){
+    headers.append('Authorization', `Bearer ${getToken()}`);
+  }
+
    
   if (!isFormData) {
     headers.append('Content-Type', 'application/json');

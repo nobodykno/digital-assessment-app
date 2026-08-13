@@ -7,6 +7,7 @@ import { autoscalerConfig } from "./config.js";
 import { getQueueSize } from "./rabbitmq.js";
 
 import { calculateDesiredReplicas } from "./scaler.js";
+import { IWorker } from "./dto/worker-dto.js";
 
 const docker = new Docker({
   socketPath: "/var/run/docker.sock",
@@ -14,13 +15,7 @@ const docker = new Docker({
 
 const lastScaleDown: Record<string, number> = {};
 
-interface IWorker {
-  name: "image" | "video";
-  queue: string;
-  service: string;
-  minReplicas: number;
-  jobsPerWorker: number;
-}
+
 
 const workers: IWorker[] = [
   {
@@ -90,7 +85,7 @@ const scaleService = async (
   });
 
   console.log(
-    `🚀 ${serviceName}: ${currentReplicas} → ${desiredReplicas}`,
+    `{serviceName}: ${currentReplicas} → ${desiredReplicas}`,
   );
 };
 
@@ -122,12 +117,6 @@ const scaleWorker = async (
    * Docker Swarm services.
    */
 
-  /*
-   * Swarm mode.
-   *
-   * Only here do we inspect the current
-   * Docker Swarm service replicas.
-   */
   const currentReplicas =
     await getCurrentReplicas(
       worker.service,
