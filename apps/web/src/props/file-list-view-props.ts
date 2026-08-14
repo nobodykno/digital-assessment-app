@@ -10,6 +10,11 @@ export interface IFileListViewProps {
 
   fileType: string;
 
+  error: string | null;
+   
+  search: string;
+
+  setSearch: (search: string) => void;
 
   setPage: (page: number) => void;
 

@@ -4,7 +4,11 @@ const MESSAGES = {
 
   FILE:{
     DELETE_FILE_SUCCESS: 'File deleted successfully',
-    DELETE_FILE_FAIL: 'File fail to delete'
+    DELETE_FILE_FAIL: 'File fail to delete',
+    FAILED_DOWNLOAD: 'Fail to download file',
+    FAILED_UPLOAD: 'Fail to upload file',
+    FILE_QUALITY_PROCESSING: 'Generating file quality ! please try after sometime',
+    FILE_UPLOAD_SUCCESS: ' File Uploaded successfully'
   },
   
   AUTH:{

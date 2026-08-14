@@ -11,7 +11,10 @@ const getToken = (): string | null => {
   
 const getHeaders = (isFormData: boolean = false, body:BodyInit) => {
   const headers = new Headers();
-  headers.append('Authorization', `Bearer ${getToken()}`);
+  if(getToken()){
+    headers.append('Authorization', `Bearer ${getToken()}`);
+  }
+
    
   if (!isFormData) {
     headers.append('Content-Type', 'application/json');
@@ -44,6 +47,6 @@ export const httpService = async <T>(
 
   const response = await fetch(request.url, options);
 
-  return handleResponse<T>(response);
+  return handleResponse<T>(response, request.requiresAuth);
 };
 

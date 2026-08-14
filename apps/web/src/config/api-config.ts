@@ -26,12 +26,22 @@ export const API = {
       type: string,
       page: number,
       limit: number,
-
-    ) => ({
-      url: `${env.apiUrl}/files/${type}?page=${page}&limit=${limit}`,
-      method: 'GET',
-    }),
-
+      search?: string,
+    ) => {
+      const params = new URLSearchParams({
+        page: String(page),
+        limit: String(limit),
+      });
+    
+      if (search?.trim()) {
+        params.set('search', search.trim());
+      }
+      return {
+        url: `${env.apiUrl}/files/${type}?${params.toString()}`,
+        method: 'GET',
+      };
+    },
+    
     GET_FILES_STATUS: (id: number) => ({
       url: `${env.apiUrl}/files/${id}/status`,
       method: 'GET',

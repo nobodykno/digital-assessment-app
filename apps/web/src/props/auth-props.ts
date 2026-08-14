@@ -11,9 +11,21 @@ import {
 } from '../model/auth/auth-model';
   
 export interface ILoginViewProps {
-    isLogin: boolean;
     loginFormData: ILoginRequestDto;
+    navigateRegister: () => void;
+    handleInputChange: (
+      event: ChangeEvent<HTMLInputElement>,
+    ) => void;
+  
+    submitForm: (
+      event: React.SubmitEvent<HTMLFormElement>,
+    ) => void;
+
+  }
+
+  export interface IRegisterViewProps {
     registerFormData: IRegisterRequestDto;
+    navigateLogin: () => void;
   
     handleInputChange: (
       event: ChangeEvent<HTMLInputElement>,
@@ -23,5 +35,4 @@ export interface ILoginViewProps {
       event: React.SubmitEvent<HTMLFormElement>,
     ) => void;
   
-    setIsLogin: Dispatch<SetStateAction<boolean>>;
   }

@@ -1,23 +1,34 @@
+import { useState } from 'react';
 import useFileDownload from '../../hooks/useDownload';
 import { IDownloadButtonProps } from '../../props/download-buttton-props';
 
-
 /**
- * 
- * @param props 
+ *
+ * @param props
  * @returns download button view
  */
-
 const DownloadButton = (props: IDownloadButtonProps) => {
+  const { downloadFile } = useFileDownload();
+  const [isDownloading, setIsDownloading] = useState(false);
 
-  const {
-    downloadFile,
-  } = useFileDownload();
+  const handleDownload = async () => {
+    if (isDownloading) {
+      return;
+    }
+
+    try {
+      setIsDownloading(true);
+      await downloadFile(props);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   return (
     <button
       type="button"
-      onClick={() => downloadFile(props)}
+      onClick={handleDownload}
+      disabled={isDownloading}
       className="
         rounded-[var(--border-radius)]
         border
@@ -31,7 +42,7 @@ const DownloadButton = (props: IDownloadButtonProps) => {
         disabled:opacity-50
       "
     >
-      Download
+      {isDownloading ? 'Downloading...' : 'Download'}
     </button>
   );
 };

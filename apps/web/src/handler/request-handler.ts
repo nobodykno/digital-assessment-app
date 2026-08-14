@@ -6,9 +6,10 @@
  * @returns 
  */
 const handleResponse = async <T>(
-  response: Response
+  response: Response,
+  requireAuth: boolean
 ): Promise<T> => {
-  if (response.status === 401) {
+  if (response.status === 401 && requireAuth) {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.href = '/login';

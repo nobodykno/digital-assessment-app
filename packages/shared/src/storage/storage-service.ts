@@ -72,6 +72,8 @@ const storageService = {
     },);
   },
 
+
+
   /**
    * Deletes an object from the bucket.
    *
@@ -81,7 +83,26 @@ const storageService = {
   async deleteObject(objectName: string) {
     await minioClient.removeObject(bucket, objectName);
   },
+   
+    /**
+   * Generates a presigned URL for downloading an object.
+   *
+   * The generated URL is valid for one hour.
+   *
+   * @param objectName - Object key in the bucket.
+   * @returns thumbnailUrl
+   */
 
+async getThumbnailUrl(objectName: string) {
+      return minioClient.presignedGetObject(
+        bucket,
+        objectName,
+        60 * 60,
+        {
+          'response-content-disposition': 'inline',
+        },
+      );
+    },
 
 };
 

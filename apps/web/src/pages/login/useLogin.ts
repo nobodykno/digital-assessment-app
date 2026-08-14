@@ -11,7 +11,6 @@ import loginService from './login-service';
  */
 
 const useLogin = () => {
-  const [isLogin, setIsLogin] = useState(true);
 
   const { login } = useAuth();
   
@@ -22,19 +21,10 @@ const useLogin = () => {
     password: '',
   });
   
-  const [registerFormData, setRegisterFormData] = useState<IRegisterRequestDto>({
-    name: '',
-    email: '',
-    password: ''
-  });
+
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement >) => {
-    if(isLogin){
-      setLogInFormData({ ...loginFormData, [e.target.name]: e.target.value });
-    }
-    else{
-      setRegisterFormData({ ...registerFormData, [e.target.name]: e.target.value });
-    }
+    setLogInFormData({ ...loginFormData, [e.target.name]: e.target.value });
   };
   
   const submitForm = async (
@@ -42,34 +32,23 @@ const useLogin = () => {
   ) => {
     event.preventDefault();
   
-    if (isLogin) {
-      await loginService.login(
-        loginFormData,
-        login,
-        navigate,
-      );
-  
-      return;
-    }
-  
-    const registered =
-      await loginService.register(
-        registerFormData,
-      );
-  
-    if (registered) {
-      setIsLogin(true);
-    }
+    await loginService.login(
+      loginFormData,
+      login,
+      navigate,
+    );
   };
+
+  const navigateRegister = async () =>{
+    navigate('/register')
+  }
 
 
   return {
-    isLogin,
     loginFormData,
-    registerFormData,
+    navigateRegister,
     submitForm,
     handleInputChange,
-    setIsLogin,
   };
 };
 export default useLogin;

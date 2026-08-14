@@ -10,6 +10,7 @@ const getFiles = async (
     fileType: request.fileType,
     page: request.page,
     limit: 10,
+    search: request.search
     
   };
   const result = await service.fileService.getAllFilesTypes(req);

@@ -15,7 +15,8 @@ const downloadFile = async (
   const request: IHeaderDto = {
     url: url,
     method: method,
-    isFormData: false
+    isFormData: false,
+    requiresAuth: true
   };
 
   return await httpService<IDownloadResponseDto>(request);
@@ -32,7 +33,8 @@ const getVideoStatus = async (
   const request: IHeaderDto = {
     url:url,
     method:method,
-    isFormData: false
+    isFormData: false,
+    requiresAuth: true
   };
   
   return await httpService<IFileStatusResponseDto>(request);
@@ -49,7 +51,8 @@ const downloadVideo= async (
   const request: IHeaderDto = {
     url: url,
     method: method,
-    isFormData: false
+    isFormData: false,
+    requiresAuth: true
   };
   
   return await httpService<IDownloadResponseDto>(request);

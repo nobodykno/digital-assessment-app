@@ -1,9 +1,10 @@
+import { Link } from 'react-router-dom';
 import { IFileCountCardProps } from '../../props/file-count-card-props';
 
 const FileCountCard = (props: IFileCountCardProps) => {
   return (
-    <div
-      onClick={props.onClick}
+   <Link
+      to={props.to}
       className="
         cursor-pointer
         rounded-[var(--border-radius)]
@@ -22,7 +23,7 @@ const FileCountCard = (props: IFileCountCardProps) => {
       <p className="mt-3 text-[var(--font-size-title)] font-[var(--font-weight-bold)]">
         {props.count}
       </p>
-    </div>
+    </Link>
   );
 };
 

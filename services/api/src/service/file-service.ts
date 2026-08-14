@@ -113,13 +113,32 @@ export const getFilesService = async (
     request.type,
     request.page,
     request.limit,
+    request.search,
+  );
+
+  const result = await Promise.all(
+    files.map(async (file) => {
+      const fileData = file.toJSON();
+
+      if (!fileData.thumbnail_image) {
+        return fileData;
+      }
+
+      return {
+        ...fileData,
+        thumbnail_image:
+          await serviceStorage.storageService.getThumbnailUrl(
+            fileData.thumbnail_image,
+          ),
+      };
+    }),
   );
 
   const totalPages = Math.ceil(count / request.limit);
 
   const response: IGetFilesResponseDto = {
     message: FILE_CONSTANTS.MESSAGES.FILE.FETCH_SUCCESS,
-    result: files,
+    result: result,
     pagination: {
       page: request.page,
       limit: request.limit,

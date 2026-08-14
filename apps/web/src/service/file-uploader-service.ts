@@ -21,6 +21,7 @@ const uploadFiles = async (
     url,
     method,
     isFormData: true,
+    requiresAuth: true
   };
   return await httpService<IUploadFileResponseDto>(request, formData);
 };
@@ -36,7 +37,8 @@ const initializeUpload = async (
   const request: IHeaderDto = {
     url,
     method,
-    isFormData: false
+    isFormData: false,
+    requiresAuth: true
   };
 
   return await httpService<IInitUploadResponseDto>(request, requestBody);
@@ -51,7 +53,8 @@ const uploadPart = async (req: IUploadPartRequestDto): Promise<IUploadPartRespon
   const request = {
     url: url,
     method: method,
-    isFormData: true
+    isFormData: true,
+    requiresAuth: true
   };
 
  
@@ -68,7 +71,8 @@ const completeUpload = async (req:ICompleteUploadRequestDto): Promise<ICompleteU
   const request: IHeaderDto = {
     url: url,
     method: method,
-    isFormData:false
+    isFormData:false,
+    requiresAuth: true
   };
 
 
