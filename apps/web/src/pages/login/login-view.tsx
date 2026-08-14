@@ -9,14 +9,15 @@ const LoginView = (props: ILoginViewProps) => {
         Login
         </h1>
 
-        <form className="space-y-4"   aria-labelledby="auth-form"  onSubmit={props.submitForm}>
+        <form className="space-y-4"   aria-labelledby="auth-title"  onSubmit={props.submitForm}>
 
 
           <div>
-            <label className="mb-1 block">Email</label>
+            <label htmlFor="email" className="mb-1 block">Email</label>
             <input
               type="email"
               name="email"
+              autoComplete="email"
               placeholder="Enter your email"
               onChange={props.handleInputChange}
               className="w-full rounded border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
@@ -24,10 +25,11 @@ const LoginView = (props: ILoginViewProps) => {
           </div>
 
           <div>
-            <label className="mb-1 block">Password</label>
+            <label htmlFor="password" className="mb-1 block">Password</label>
             <input
               type="password"
               name="password"
+              autoComplete="password"
               placeholder="Enter your password"
               onChange={props.handleInputChange}
               className="w-full rounded border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"

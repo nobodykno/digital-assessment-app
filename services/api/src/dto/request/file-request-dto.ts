@@ -42,6 +42,7 @@ export interface IGetFilesRequestDto {
   type: string;
   page: number;
   limit: number;
+  search?: string;
 }
 
 

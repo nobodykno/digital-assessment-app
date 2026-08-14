@@ -140,7 +140,7 @@ describe('FileList integration', () => {
   it('should delete a file successfully', async () => {
     const user = userEvent.setup();
     const onDeleteSuccess = vi.fn();
-
+  
     render(
       <AuthProvider>
         <DeleteButton
@@ -149,13 +149,19 @@ describe('FileList integration', () => {
         />
       </AuthProvider>,
     );
-
+  
     await user.click(
       screen.getByRole('button', {
         name: 'Delete file',
       }),
     );
-
+  
+    await user.click(
+      await screen.findByRole('button', {
+        name:'Delete',
+      }),
+    );
+  
     await waitFor(() => {
       expect(onDeleteSuccess).toHaveBeenCalled();
     });

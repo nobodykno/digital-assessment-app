@@ -6,8 +6,9 @@ import { toast } from 'react-toastify';
 
 
 
-const useFile = () => {
+const useFileCount = () => {
 
+  const [error, setError] = useState<string>("")
   const [folders, setFolders] = useState<IFileCountModelResponseDto>({
     message: '',
     result: {
@@ -28,6 +29,11 @@ const useFile = () => {
      
     } catch (error) {
       console.error(error);
+      setError(
+        error instanceof Error
+          ? error.message
+          : 'Failed to load files',
+      );
     } finally {
       setLoading(false);
     }
@@ -40,7 +46,8 @@ const useFile = () => {
   return {
     folders,
     loading,
+    error
   };
 };
 
-export default useFile;
+export default useFileCount;

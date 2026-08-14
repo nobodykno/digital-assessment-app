@@ -1,14 +1,12 @@
 import React from 'react';
 
 import useFileUploader from '../../hooks/useFileUploader';
-
 import { IFileUploaderProps } from '../../props/file-uploader-props';
 import ProgressBar from '../file-progress-bar/file-progress-bar';
 
-
 /**
- * 
- * @param props 
+ *
+ * @param props
  * @returns file uploader view
  */
 const FileUploader = (props: IFileUploaderProps) => {
@@ -16,11 +14,23 @@ const FileUploader = (props: IFileUploaderProps) => {
     fileInputRef,
     handleChooseFile,
     handleFileChange,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    isDragging,
     uploadProgress,
   } = useFileUploader(props);
 
   return (
-    <div className="flex w-64 flex-col">
+    <div
+      className="flex w-64 flex-col items-center gap-2 rounded-[var(--border-radius)] border-2
+        border-dashed
+        p-4
+        border-[var(--color-border)]"
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
+    >
       <input
         ref={fileInputRef}
         id="file-upload"
@@ -39,7 +49,17 @@ const FileUploader = (props: IFileUploaderProps) => {
         }`}
         onChange={handleFileChange}
       />
-  
+
+      <p className="text-sm text-[var(--color-text-secondary)]">
+        {isDragging
+          ? 'Drop files here'
+          : 'Drag and drop files here'}
+      </p>
+
+      <span className="text-sm text-[var(--color-text-secondary)]">
+        or
+      </span>
+
       <button
         type="button"
         onClick={handleChooseFile}
@@ -56,7 +76,7 @@ const FileUploader = (props: IFileUploaderProps) => {
       >
         Upload
       </button>
-  
+
       <ProgressBar progress={uploadProgress} />
     </div>
   );

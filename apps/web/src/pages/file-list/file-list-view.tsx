@@ -15,6 +15,24 @@ const FileListView = (props: IFileListViewProps) => {
       </h1>
 
       <div className="mb-6 flex items-center justify-between">
+
+      <input
+          type="search"
+          value={props.search}
+          onChange={(event) => props.setSearch(event.target.value)}
+          placeholder="Search by filename..."
+          aria-label="Search files by filename"
+          className="
+            rounded-[var(--border-radius)]
+            border
+            border-[var(--color-border)]
+            px-3
+            py-2
+            text-[var(--color-text-primary)]
+            focus:outline-2
+            focus:outline-[var(--color-primary)]
+          "
+        />
         <FileUploader
           fileType={props.fileType}
           onUploadSuccess={props.refreshFiles}
@@ -22,6 +40,7 @@ const FileListView = (props: IFileListViewProps) => {
       </div>
 
       <FileTable
+        error={props.error}
         files={props.files}
         loading={props.loading}
         fileType={props.fileType}

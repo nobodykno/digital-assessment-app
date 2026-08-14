@@ -33,9 +33,10 @@ const useFileDownload = () => {
       document.body.removeChild(link);
 
     } catch (error) {
-
-      console.error(error);
-
+      toast.error(
+      error instanceof Error
+      ? error.message
+      : 'Failed to download')
     }
 
   };
@@ -44,19 +45,33 @@ const useFileDownload = () => {
     fileId: number,
     quality: string,
   ) => {
-    const response =
+
+    try {
+      const response =
       await service.fileDownloadService.downloadVideo(
         fileId,
         quality,
       );
   
     if (response.url) {
+      toast.success('Downloading file');
       window.open(response.url, '_blank');
       return;
     }
+
+    if(!response.url){
+      toast.success(MESSAGES.FILE.FILE_QUALITY_PROCESSING);
+    }
   
-    toast.info(MESSAGES.DOWNLOAD_QUALITY.QUALITY_MISSING);
-  };
+    } catch (error) {
+      toast.error(
+      error instanceof Error
+      ? error.message
+      : MESSAGES.FILE.FAILED_DOWNLOAD)
+    }
+
+
+  }
 
 
 

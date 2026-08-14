@@ -168,12 +168,12 @@ const countFiles = (userId: number, type: string) => {
  * @returns JSON containing paginated result
  */
 
-
 const findAllByType = (
   userId: number,
   type: string,
   page: number,
   limit: number,
+  search?: string,
 ) => {
   const offset = (page - 1) * limit;
 
@@ -181,6 +181,11 @@ const findAllByType = (
     where: {
       user_id: userId,
       type,
+      ...(search?.trim() && {
+        name: {
+          [Op.iLike]: `%${search.trim()}%`,
+        },
+      }),
     },
     limit,
     offset,

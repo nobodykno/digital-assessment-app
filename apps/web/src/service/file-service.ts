@@ -29,6 +29,7 @@ const getAllFilesTypes = async (
       request.fileType,
       request.page,
       request.limit,
+      request.search
     );
 
   const header: IHeaderDto = {

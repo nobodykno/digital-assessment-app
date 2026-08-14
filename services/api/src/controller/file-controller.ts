@@ -105,7 +105,7 @@ export const getFiles = async (
     IFileTypeParams,
     IGetFilesResponseDto,
     IGetFilesRequestDto,
-    { page?: string; limit?: string }
+    { page?: string; limit?: string, search?: string }
   >,
   res: Response,
   next: NextFunction,
@@ -116,6 +116,7 @@ export const getFiles = async (
       type: req.params.type,
       page: Number(req.query.page) || 1,
       limit: Number(req.query.limit) || 10,
+      search: req.query.search
     };
 
     const response = await service.file.getFilesService(request);
