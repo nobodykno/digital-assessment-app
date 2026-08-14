@@ -11,7 +11,8 @@ const fileCount = async (): Promise<IFileCountModelResponseDto> => {
   const request:IHeaderDto ={
     url:url,
     method:method,
-    isFormData:false
+    isFormData:false,
+    requiresAuth: true
   };
   const response =  await httpService<IFileCountModelResponseDto>(request);
 
@@ -33,7 +34,8 @@ const getAllFilesTypes = async (
   const header: IHeaderDto = {
     url: url,
     method: method,
-    isFormData: false
+    isFormData: false,
+    requiresAuth: true
 
   };
 
@@ -47,7 +49,8 @@ const getFileStatus = async (fileId:number): Promise<IFileStatusResponseDto> => 
   const request:IHeaderDto ={
     url:url,
     method:method,
-    isFormData:false
+    isFormData:false,
+    requiresAuth: true
   };
   const result =  await httpService<IFileStatusResponseDto>(request);
 
@@ -68,7 +71,8 @@ const deleteFile = async (
   const request: IHeaderDto = {
     url:url,
     method:method,
-    isFormData: false
+    isFormData: false,
+    requiresAuth: true
 
   };
 

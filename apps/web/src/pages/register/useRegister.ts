@@ -3,52 +3,54 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { ILoginRequestDto, IRegisterRequestDto } from '../../model/auth/auth-model';
 
-import loginService from './login-service';
+import loginService from './register-service';
 
 /**
  * 
  * Business logic for data 
  */
 
-const useLogin = () => {
+const useRegister = () => {
 
-  const { login } = useAuth();
-  
   const navigate = useNavigate();
   
-  const [loginFormData, setLogInFormData] =  useState<ILoginRequestDto>({
-    email: '',
-    password: '',
-  });
-  
 
   
+  const [registerFormData, setRegisterFormData] = useState<IRegisterRequestDto>({
+    name: '',
+    email: '',
+    password: ''
+  });
+  
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement >) => {
-    setLogInFormData({ ...loginFormData, [e.target.name]: e.target.value });
+    setRegisterFormData({ ...registerFormData, [e.target.name]: e.target.value });
   };
   
   const submitForm = async (
     event: React.SubmitEvent<HTMLFormElement>,
   ) => {
     event.preventDefault();
+ 
+    const registered =
+      await loginService.register(
+        registerFormData,
+      );
   
-    await loginService.login(
-      loginFormData,
-      login,
-      navigate,
-    );
+    if (registered) {
+         navigate('/login')
+    }
   };
 
-  const navigateRegister = async () =>{
-    navigate('/register')
+  const navigateLogin = async () =>{
+    navigate('/login')
   }
 
 
   return {
-    loginFormData,
-    navigateRegister,
+    registerFormData,
     submitForm,
     handleInputChange,
+    navigateLogin
   };
 };
-export default useLogin;
+export default useRegister;

@@ -183,7 +183,6 @@ const useFileUploader = (props: IFileUploaderProps) => {
     request: ICompleteUploadRequestDto,
   ): Promise<ICompleteUploadResponseDto> => {
     setUploadProgress(100);
-    props.onUploadSuccess();
     return await service.fileUploadService.completeUpload(request);
   };
 
@@ -199,9 +198,14 @@ const useFileUploader = (props: IFileUploaderProps) => {
           const response =
             await service.fileService.getFileStatus(fileId);
 
-          if (response.status !== 'Completed') {
+          if (response.status == 'Completed') {
             clearInterval(interval);
             resolve();
+          }
+
+          if (response.status == 'Failed') {
+            clearInterval(interval);
+            reject(new Error('File processing failed'));
           }
         } catch (error) {
           clearInterval(interval);

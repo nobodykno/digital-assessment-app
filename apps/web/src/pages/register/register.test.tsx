@@ -2,56 +2,92 @@ import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
-import Login from './login';
 import { AuthProvider } from '../../context/auth-context';
+import Register from './register'
+import registerService from './register-service';
 
-import loginService from './login-service';
-
-vi.mock('./login-service', () => ({
+vi.mock('./register-service', () => ({
   default: {
-    login: vi.fn(),
+    register: vi.fn(),
   },
 }));
 
 
-const renderLogin = () => {
+const renderRegister = () => {
   return render(
     <AuthProvider>
       <MemoryRouter>
-        <Login />
+        <Register />
       </MemoryRouter>
     </AuthProvider>,
   );
 };
 
-describe('Login', () => {
-  it('should render Login page', () => {
 
-    renderLogin();
+
+describe('Register', () => {
+  it('should switch to register form', async () => {
+    const user = userEvent.setup();
+
+    renderRegister();
+
 
     expect(
-      screen.getByRole('heading', { name: 'Login' }),
+      screen.getByRole('heading', { name: 'Register' }),
     ).toBeInTheDocument();
   });
 
   it('should render email input', () => {
-    renderLogin();
+    renderRegister();
     expect(
       screen.getByPlaceholderText('Enter your email'),
     ).toBeInTheDocument();
   });
 
   it('should render Password input', () => {
-    renderLogin();
+    renderRegister();
     expect(
       screen.getByPlaceholderText('Enter your password'),
     ).toBeInTheDocument();
   });
 
+  it('should render name input', async () => {
+    const user = userEvent.setup();
+
+    renderRegister();   
+    
+    await user.click(
+      screen.getByRole('button', { name: 'Register' }),
+    );
+
+    expect(
+      screen.getByPlaceholderText('Enter your name'),
+    ).toBeInTheDocument();
+  });
+
+
+
+  it('should allow user to enter name', async () => {
+    const user = userEvent.setup();
+  
+    renderRegister();
+
+    await user.click(
+      screen.getByRole('button', { name: 'Register' }),
+    );
+
+  
+    const nameInput = screen.getByPlaceholderText('Enter your name');
+  
+    await user.type(nameInput, 'AdminParam');
+  
+    expect(nameInput).toHaveValue('AdminParam');
+  });
+
   it('should allow user to enter email', async () => {
     const user = userEvent.setup();
   
-    renderLogin();
+    renderRegister();
   
     const emailInput = screen.getByPlaceholderText('Enter your email');
   
@@ -63,7 +99,7 @@ describe('Login', () => {
   it('should allow user to enter password', async () => {
     const user = userEvent.setup();
   
-    renderLogin();
+    renderRegister();
   
     const passwordInput = screen.getByPlaceholderText('Enter your password');
   
@@ -73,33 +109,38 @@ describe('Login', () => {
   });
 
 
-  it('should call login service when login form is submitted', async () => {
+
+  it('should call register  service when register form is submitted', async () => {
     const user = userEvent.setup();
+
+    vi.mocked(registerService.register).mockResolvedValue(true);
   
-    vi.mocked(loginService.login).mockResolvedValue(true);
+    renderRegister();
+
+    await user.click(
+      screen.getByRole('button', { name: 'Register' }),
+    );
   
-    renderLogin();
-  
+
+    const nameInput = screen.getByPlaceholderText('Enter your name');
     const emailInput = screen.getByPlaceholderText('Enter your email');
     const passwordInput = screen.getByPlaceholderText('Enter your password');
-  
+
+    await user.type(nameInput, 'AdminParamjit');
     await user.type(emailInput, 'admin@example.com');
     await user.type(passwordInput, 'Admin@123');
   
     await user.click(
-      screen.getByRole('button', { name: 'Login' }),
+      screen.getByRole('button', { name: 'Register' }),
     );
   
-    expect(loginService.login).toHaveBeenCalledWith(
+    expect(registerService.register).toHaveBeenCalledWith(
       {
+        name: 'AdminParamjit',
         email: 'admin@example.com',
         password: 'Admin@123',
       },
-      expect.any(Function),
-      expect.any(Function),
-    );;
+    );
   });
 
 });
-
-

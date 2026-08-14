@@ -1,16 +1,25 @@
 
-import { ILoginViewProps } from '../../props/auth-props';
+import { IRegisterViewProps } from '../../props/auth-props';
 
-const LoginView = (props: ILoginViewProps) => {
+const RegisterView = (props: IRegisterViewProps) => {
   return (
     <div className="flex items-center justify-center bg-gray-100">
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-md">
         <h1 id="auth-title" className="mb-6 text-center text-2xl font-bold">
-        Login
+        Register
         </h1>
 
         <form className="space-y-4"   aria-labelledby="auth-form"  onSubmit={props.submitForm}>
-
+        <div>
+              <label className="mb-1 block">Name</label>
+              <input
+                type="text"
+                name="name"
+                placeholder="Enter your name"
+                onChange={props.handleInputChange}
+                className="w-full rounded border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
+              />
+            </div>
 
           <div>
             <label className="mb-1 block">Email</label>
@@ -38,19 +47,19 @@ const LoginView = (props: ILoginViewProps) => {
             type="submit"
             className="w-full rounded bg-blue-600 py-2 text-white hover:bg-blue-700"
           >
-            Login
+            Register
           </button>
         </form>
 
         <p className="mt-4 text-center">
-        Don't have an account?
+        Already have an account?
 
           <button
             type="button"
-            onClick={() => props.navigateRegister()}
+            onClick={() => props.navigateLogin()}
             className="ml-2 text-blue-600 hover:underline"
           >
-            Register
+            Login
           </button>
         </p>
       </div>
@@ -58,4 +67,4 @@ const LoginView = (props: ILoginViewProps) => {
   );
 };
 
-export default LoginView;
+export default RegisterView;

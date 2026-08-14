@@ -47,6 +47,6 @@ export const httpService = async <T>(
 
   const response = await fetch(request.url, options);
 
-  return handleResponse<T>(response);
+  return handleResponse<T>(response, request.requiresAuth);
 };
 

@@ -1,6 +1,8 @@
 
 import { API } from '../config/api-config';
 import { ILoginRequestDto, ILoginResponseDto, IRegisterRequestDto, IRegisterResponseDto } from '../model/auth/auth-model';
+import { IHeaderDto } from '../model/http/http-model';
+import { httpService } from './base-service';
 
 
 
@@ -13,27 +15,15 @@ import { ILoginRequestDto, ILoginResponseDto, IRegisterRequestDto, IRegisterResp
 
 const login = async (payload: ILoginRequestDto) => {
   const { url, method } = API.AUTH.LOGIN;
+    const request: IHeaderDto = {
+      url: url,
+      method: method,
+      isFormData: false,
+      requiresAuth: false
+    };
 
-  const response = await fetch(url, {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
+      return await httpService<ILoginResponseDto>(request,payload);
   
-  const data: ILoginResponseDto = await response.json();
-
-  const result:ILoginResponseDto = {
-    token: data.token,
-    message: data.message
-  };
-  
-  if (!response.ok) {
-    throw new Error(data.message || 'Login failed');
-  }
-  
-  return result;
 };
 
 /**
@@ -44,27 +34,15 @@ const login = async (payload: ILoginRequestDto) => {
 
 const register = async (payload: IRegisterRequestDto) => {
   const { url, method } = API.AUTH.REGISTER;
-  
-  const response = await fetch(url, {
-    method,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  });
-    
-  const data: IRegisterResponseDto = await response.json();
-  
-  const result:IRegisterResponseDto = {
-    message: data.message,
-    result: data.result
+
+  const request: IHeaderDto = {
+    url: url,
+    method: method,
+    isFormData: false,
+    requiresAuth: false
   };
-    
-  if (!response.ok) {
-    throw new Error(data.message || 'Login failed');
-  }
-    
-  return result;
+
+    return await httpService<IRegisterResponseDto>(request,payload)
 };
   
 

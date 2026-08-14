@@ -10,6 +10,7 @@ import Login from './pages/login/login';
 import FileCount from './pages/file-count/file-count';
 import FileList from './pages/file-list/file-list';
 import NotFound from './pages/not-found/not-found';
+import Register from './pages/register/register';
 
 function App() {
   return (
@@ -32,6 +33,9 @@ function App() {
           <Routes>
             {/* Public Route */}
             <Route path="/login" element={<Login />} />
+
+            {/* Public Route */}
+            <Route path="/register" element={<Register />} />
 
             {/* Protected Routes */}
             <Route element={<AuthGuard />}>
