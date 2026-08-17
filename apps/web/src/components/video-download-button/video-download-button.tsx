@@ -17,8 +17,8 @@ const VideoDownload = (props: IVideoDownloadProps) => {
   return (
     <div className="flex items-center gap-2">
 
-    <label htmlFor={`video-quality-${props.fileId}`} 
-    className="text-sm text-[var(--color-text-secondary)]">
+      <label htmlFor={`video-quality-${props.fileId}`} 
+        className="text-sm text-[var(--color-text-secondary)]">
         Quality
       </label>
       <select

@@ -15,15 +15,15 @@ import { httpService } from './base-service';
 
 const login = async (payload: ILoginRequestDto, signal: AbortSignal) => {
   const { url, method } = API.AUTH.LOGIN;
-    const request: IHeaderDto = {
-      url: url,
-      method: method,
-      isFormData: false,
-      requiresAuth: false,
-      signal: signal
-    };
+  const request: IHeaderDto = {
+    url: url,
+    method: method,
+    isFormData: false,
+    requiresAuth: false,
+    signal: signal
+  };
 
-      return await httpService<ILoginResponseDto>(request,payload);
+  return await httpService<ILoginResponseDto>(request,payload);
   
 };
 
@@ -44,7 +44,7 @@ const register = async (payload: IRegisterRequestDto, signal: AbortSignal) => {
     signal: signal
   };
 
-    return await httpService<IRegisterResponseDto>(request,payload)
+  return await httpService<IRegisterResponseDto>(request,payload);
 };
   
 

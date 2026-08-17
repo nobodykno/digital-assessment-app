@@ -11,7 +11,7 @@ const ProtectedLayout = () => {
     <div className="flex h-screen flex-col">
 
       <main className="flex-1 overflow-y-auto bg-gray-100 p-6">
-      <Outlet />
+        <Outlet />
       </main>
 
     </div>

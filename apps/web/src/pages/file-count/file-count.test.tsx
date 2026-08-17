@@ -38,6 +38,7 @@ describe('FileCount', () => {
     expect(mockedFileCountView.mock.calls[0][0]).toEqual({
       folders,
       loading: false,
+      error:'not fetching'
     });
   });
 });

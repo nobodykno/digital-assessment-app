@@ -8,7 +8,7 @@ const DeleteButton = (props: DeleteButtonProps) => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
-    if (isDeleting) return;
+    if (isDeleting) {return;}
 
     try {
       setIsDeleting(true);

@@ -17,7 +17,7 @@ const FileTable = (props: IFileTableProps) => {
 
   if (props.error) {
     return (
-       <ErrorView error={props.error} />
+      <ErrorView error={props.error} />
     );
   }
   
@@ -72,7 +72,7 @@ const FileTable = (props: IFileTableProps) => {
                 </td>
               )}
   
-            <td className="p-3">{file.name}</td>
+              <td className="p-3">{file.name}</td>
   
               <td className="p-3">
                 <time dateTime={file.uploadedAt}>

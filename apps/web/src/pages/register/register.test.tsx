@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { AuthProvider } from '../../context/auth-context';
-import Register from './register'
+import Register from './register';
 import registerService from './register-service';
 
 vi.mock('./register-service', () => ({
@@ -140,6 +140,7 @@ describe('Register', () => {
         email: 'admin@example.com',
         password: 'Admin@123',
       },
+      expect.any(AbortSignal),
     );
   });
 

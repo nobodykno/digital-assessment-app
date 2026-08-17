@@ -25,9 +25,9 @@ const useFileDownload = () => {
           controller.signal,
         );
 
-        if (controller.signal.aborted) {
-          return;
-        }
+      if (controller.signal.aborted) {
+        return;
+      }
 
       const link =
         document.createElement('a');
@@ -44,9 +44,9 @@ const useFileDownload = () => {
 
     } catch (error) {
       toast.error(
-      error instanceof Error
-      ? error.message
-      : 'Failed to download')
+        error instanceof Error
+          ? error.message
+          : 'Failed to download');
     }
 
   };
@@ -66,32 +66,32 @@ const useFileDownload = () => {
       await service.fileDownloadService.downloadVideo(
         fileId,
         quality,
-         controller.signal,
-      )
+        controller.signal,
+      );
 
       if (controller.signal.aborted) {
         return;
       }
   
-    if (response.url) {
-      toast.success('Downloading file');
-      window.open(response.url, '_blank');
-      return;
-    }
+      if (response.url) {
+        toast.success('Downloading file');
+        window.open(response.url, '_blank');
+        return;
+      }
 
-    if(!response.url){
-      toast.success(MESSAGES.FILE.FILE_QUALITY_PROCESSING);
-    }
+      if(!response.url){
+        toast.success(MESSAGES.FILE.FILE_QUALITY_PROCESSING);
+      }
   
     } catch (error) {
       toast.error(
-      error instanceof Error
-      ? error.message
-      : MESSAGES.FILE.FAILED_DOWNLOAD)
+        error instanceof Error
+          ? error.message
+          : MESSAGES.FILE.FAILED_DOWNLOAD);
     }
 
 
-  }
+  };
 
 
   useEffect(() => {

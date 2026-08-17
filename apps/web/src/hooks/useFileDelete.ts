@@ -40,7 +40,7 @@ const useFileDelete = () => {
         error.name === 'AbortError'
       ) {
         toast.error(
-          "Delete Request cancel"
+          'Delete Request cancel'
         );
         return;
       }

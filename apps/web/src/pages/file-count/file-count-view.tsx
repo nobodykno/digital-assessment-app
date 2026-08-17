@@ -1,16 +1,15 @@
-import { useNavigate } from 'react-router-dom';
+
 
 import { FileCountViewProps } from '../../props/file-count-view-props';
 import FileCountCard from './file-count-card';
 import ErrorView from '../../components/error-view/error-view';
 
 const FileCountView = (props: FileCountViewProps) => {
-  const navigate = useNavigate();
 
 
   if (props.error) {
     return (
-       <ErrorView error={props.error} />
+      <ErrorView error={props.error} />
     );
   }
 
@@ -50,7 +49,7 @@ const FileCountView = (props: FileCountViewProps) => {
           <FileCountCard
             title="Videos"
             count={props.folders.result.videos}
-             to="/file/video"
+            to="/file/video"
           />
 
           <FileCountCard

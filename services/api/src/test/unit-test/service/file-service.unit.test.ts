@@ -285,11 +285,25 @@ const { uploadFilesService } =
         'image',
         1,
         10,
+        undefined
       );
   
       expect(result).toEqual({
         message: expect.any(String),
-        result: [file],
+        result: [
+          expect.objectContaining({
+            id: 1,
+            user_id: 1,
+            name: 'test.jpg',
+            file_name: 'test.jpg',
+            size: 1000,
+            mime_type: 'image/jpeg',
+            path: 'test/test.jpg',
+            thumbnail_image: '',
+            type: 'image',
+            status: 'COMPLETED',
+          }),
+        ],
         pagination: {
           page: 1,
           limit: 10,

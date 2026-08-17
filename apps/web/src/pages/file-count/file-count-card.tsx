@@ -3,7 +3,7 @@ import { IFileCountCardProps } from '../../props/file-count-card-props';
 
 const FileCountCard = (props: IFileCountCardProps) => {
   return (
-   <Link
+    <Link
       to={props.to}
       className="
         cursor-pointer

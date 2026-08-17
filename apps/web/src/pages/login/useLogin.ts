@@ -52,7 +52,7 @@ const useLogin = () => {
         error instanceof DOMException &&
         error.name === 'AbortError'
       ) {
-        toast.error("Login Request cancelled")
+        toast.error('Login Request cancelled');
         return;
       }
 
@@ -61,8 +61,8 @@ const useLogin = () => {
   };
 
   const navigateRegister = async () =>{
-    navigate('/register')
-  }
+    navigate('/register');
+  };
 
 
   return {

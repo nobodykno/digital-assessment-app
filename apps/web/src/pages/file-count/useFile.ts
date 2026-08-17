@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 
 const useFileCount = () => {
 
-  const [error, setError] = useState<string>("")
+  const [error, setError] = useState<string>('');
   const [folders, setFolders] = useState<IFileCountModelResponseDto>({
     message: '',
     result: {
@@ -33,8 +33,8 @@ const useFileCount = () => {
         error instanceof DOMException &&
         error.name === 'AbortError'
       ) {
-        toast.error("Request cancelled")
-        setError("Request cancelled");
+        toast.error('Request cancelled');
+        setError('Request cancelled');
       }
       setError(
         error instanceof Error

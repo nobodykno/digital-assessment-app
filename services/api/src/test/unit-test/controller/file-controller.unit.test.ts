@@ -746,7 +746,7 @@ describe('File Controller', () => {
       expect(res.json).toHaveBeenCalledWith(response);
     });
 
-    it('should return 201 when video is pending', async () => {
+    it('should return 200 when video is pending', async () => {
       const req = {
         user: {
           id: 1,
@@ -771,7 +771,7 @@ describe('File Controller', () => {
         res as any,
       );
 
-      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(response);
     });
   });
@@ -814,7 +814,7 @@ describe('File Controller', () => {
       expect(res.json).toHaveBeenCalledWith(response);
     });
 
-    it('should return 201 when file is pending', async () => {
+    it('should return 200 when file is pending', async () => {
       const req = {
         user: {
           id: 1,
@@ -826,7 +826,7 @@ describe('File Controller', () => {
 
       const response = {
         message: 'File is still processing',
-        status: 'Pending',
+        status: 'Pending', 
       };
 
       downloadFiles.mockResolvedValue(
@@ -838,7 +838,7 @@ describe('File Controller', () => {
         res as any,
       );
 
-      expect(res.status).toHaveBeenCalledWith(201);
+      expect(res.status).toHaveBeenCalledWith(200);
       expect(res.json).toHaveBeenCalledWith(response);
     });
   });

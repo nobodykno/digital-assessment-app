@@ -53,13 +53,13 @@ const useFileList = (fileType: string) => {
       setFiles(response.result);
       setPagination(response.pagination);
     } catch (error) {
-          if (
-            error instanceof DOMException &&
+      if (
+        error instanceof DOMException &&
             error.name === 'AbortError'
-          ) {
-            toast.error("Request cancelled")
-            setError("Request cancelled");
-          }
+      ) {
+        toast.error('Request cancelled');
+        setError('Request cancelled');
+      }
       setFiles([]);
       setError(
         error instanceof Error
@@ -96,7 +96,7 @@ const useFileList = (fileType: string) => {
 
     return () => {
       controller.abort();
-    }
+    };
 
     
   }, [fileType, page, search]);

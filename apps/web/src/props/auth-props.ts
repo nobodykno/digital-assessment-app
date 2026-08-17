@@ -23,7 +23,7 @@ export interface ILoginViewProps {
 
   }
 
-  export interface IRegisterViewProps {
+export interface IRegisterViewProps {
     registerFormData: IRegisterRequestDto;
     navigateLogin: () => void;
   

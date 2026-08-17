@@ -95,6 +95,7 @@ describe('Login', () => {
         email: 'admin@example.com',
         password: 'Admin@123',
       },
+      expect.any(AbortSignal),
       expect.any(Function),
       expect.any(Function),
     );;

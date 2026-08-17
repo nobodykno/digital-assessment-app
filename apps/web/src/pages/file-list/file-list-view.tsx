@@ -16,7 +16,7 @@ const FileListView = (props: IFileListViewProps) => {
 
       <div className="mb-6 flex items-center justify-between">
 
-      <input
+        <input
           type="search"
           value={props.search}
           onChange={(event) => props.setSearch(event.target.value)}

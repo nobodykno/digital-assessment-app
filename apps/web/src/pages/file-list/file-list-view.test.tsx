@@ -130,7 +130,7 @@ describe('FileListView', () => {
 
       setPage: vi.fn(),
 
-      refreshFiles: vi.fn(),
+      refreshFiles,
 
     };
   
@@ -146,47 +146,7 @@ describe('FileListView', () => {
 
   it('should pass props to Pagination', () => {
     const setPage = vi.fn();
-    
-    const props = {
-      loading: false,
 
-      files:[],
-
-      search: 'name',
-
-      pagination: {
-        page: 1,
-        limit: 10,
-        total: 1,
-        totalPages: 1,
-        hasNextPage: false,
-        hasPreviousPage: false
-      },
-
-      fileType: 'image',
-  
-      error: 'New error',
-
-      setSearch: vi.fn(),
-
-      setPage: vi.fn(),
-
-      refreshFiles: vi.fn(),
-
-    };
-  
-    render(<FileListView {...props} />);
-  
-    const mockedPagination = vi.mocked(Pagination);
-  
-    expect(mockedPagination.mock.calls[0][0]).toEqual({
-      pagination: props.pagination,
-      onPageChange: setPage,
-    });
-  });
-
-
-  it('should pass props to FileTable', () => {
     const refreshFiles = vi.fn();
     
     const props = {
@@ -211,9 +171,51 @@ describe('FileListView', () => {
 
       setSearch: vi.fn(),
 
-      setPage: vi.fn(),
+      setPage,
 
-      refreshFiles: vi.fn(),
+      refreshFiles,
+
+    };
+  
+    render(<FileListView {...props} />);
+  
+    const mockedPagination = vi.mocked(Pagination);
+  
+    expect(mockedPagination.mock.calls[0][0]).toEqual({
+      pagination: props.pagination,
+      onPageChange: setPage,
+    });
+  });
+
+
+  it('should pass props to FileTable', () => {
+    const refreshFiles = vi.fn();
+    const setPage = vi.fn();
+    const props = {
+      loading: false,
+
+      files:[],
+
+      search: 'name',
+
+      pagination: {
+        page: 1,
+        limit: 10,
+        total: 1,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPreviousPage: false
+      },
+
+      fileType: 'image',
+  
+      error: 'New error',
+
+      setSearch: vi.fn(),
+
+      setPage,
+
+      refreshFiles,
 
     };
   
@@ -226,6 +228,7 @@ describe('FileListView', () => {
       loading: false,
       fileType: 'image',
       refreshFiles,
+      error: 'New error',
     });
   });
 

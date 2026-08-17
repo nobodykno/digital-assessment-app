@@ -109,7 +109,7 @@ const useFileUploader = (props: IFileUploaderProps) => {
         error instanceof DOMException &&
         error.name === 'AbortError'
       ) {
-        toast.error("Upload Cancelled");
+        toast.error('Upload Cancelled');
         return;
       }
   
@@ -248,14 +248,14 @@ const useFileUploader = (props: IFileUploaderProps) => {
       const start =
         (partNumber - 1) * CHUNK_SIZE;
 
-        if (signal.aborted) {
+      if (signal.aborted) {
 
-          toast.error("Upload Cancelled")
-          throw new DOMException(
-            'Upload cancelled',
-            'AbortError',
-          );
-        }
+        toast.error('Upload Cancelled');
+        throw new DOMException(
+          'Upload cancelled',
+          'AbortError',
+        );
+      }
 
       const end = 
       Math.min(
@@ -342,7 +342,7 @@ const useFileUploader = (props: IFileUploaderProps) => {
         'abort',
         () => {
           clearInterval(interval);
-           toast.error("Upload Request cancelled");
+          toast.error('Upload Request cancelled');
           reject(
             new DOMException(
               'Request cancelled',

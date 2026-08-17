@@ -3,7 +3,7 @@ import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
 import reactRefresh from 'eslint-plugin-react-refresh';
 import react from 'eslint-plugin-react';
-
+import tseslint from 'typescript-eslint';
 export default tseslint.config(
   {
     ignores: ['dist','src/test/**',
@@ -21,7 +21,9 @@ export default tseslint.config(
       globals: globals.browser,
 
       parserOptions: {
-        projectService: true,
+        projectService: {
+          allowDefaultProject: ['vite.config.ts', 'vitest.config.ts'],
+        },
       },
     },
     plugins: {

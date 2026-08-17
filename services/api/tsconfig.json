@@ -5,7 +5,10 @@
       "outDir": "./dist",
       "declaration": true,
       "declarationMap": true,
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
       "sourceMap": true,
+      "isolatedModules": true,
       "types": ["node", "jest"]
     },
     "include": ["src"]

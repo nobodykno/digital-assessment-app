@@ -35,35 +35,35 @@ const useRegister = () => {
 
     const controller = new AbortController();
     controllerRef.current = controller;
-   try{
+    try{
 
-    const registered =
+      const registered =
       await loginService.register(
         registerFormData,
         controller.signal
       );
 
       if (registered) {
-        navigate('/login')
-   }
+        navigate('/login');
+      }
     } catch (error) {
-            if (
-              error instanceof DOMException &&
+      if (
+        error instanceof DOMException &&
               error.name === 'AbortError'
-            ) {
-              toast.error("Login Request cancelled")
-              return;
-            }
+      ) {
+        toast.error('Login Request cancelled');
+        return;
+      }
       
-            throw error;
-          }
+      throw error;
+    }
   
 
   };
 
   const navigateLogin = async () =>{
-    navigate('/login')
-  }
+    navigate('/login');
+  };
 
 
   return {

@@ -10,17 +10,17 @@ const RegisterView = (props: IRegisterViewProps) => {
         </h1>
 
         <form className="space-y-4"   aria-labelledby="auth-title"  onSubmit={props.submitForm}>
-        <div>
-              <label htmlFor='name' className="mb-1 block">Name</label>
-              <input
-                type="text"
-                name="name"
-                autoComplete="name"
-                placeholder="Enter your name"
-                onChange={props.handleInputChange}
-                className="w-full rounded border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
-              />
-            </div>
+          <div>
+            <label htmlFor='name' className="mb-1 block">Name</label>
+            <input
+              type="text"
+              name="name"
+              autoComplete="name"
+              placeholder="Enter your name"
+              onChange={props.handleInputChange}
+              className="w-full rounded border border-gray-300 p-2 focus:border-blue-500 focus:outline-none"
+            />
+          </div>
 
           <div>
             <label htmlFor='email' className="mb-1 block">Email</label>

@@ -34,7 +34,6 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     ip: req.ip,
     data: err,
   });
-  console.error("err",err)
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
       message: err.message,
