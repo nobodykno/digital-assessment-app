@@ -1,11 +1,15 @@
-import { jest } from '@jest/globals';
+import {
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from '@jest/globals';
 
 import repository from '@dam/database/repositories';
 import utils from '../../../utils/index.js';
 import model from '@dam/database/models';
 import serviceStorage from '@dam/shared/storage';
-import FileProcessing from '../../../../../../packages/database/dist/models/file-processing-model.js';
-import { IFileProcessingCreateAttributes } from '../../../../../../packages/database/dist/types/file-processing-type.js';
 
 const bulkCreate = jest.fn() as jest.MockedFunction<
   typeof repository.fileRepository.bulkCreate

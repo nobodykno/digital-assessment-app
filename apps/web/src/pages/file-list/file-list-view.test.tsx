@@ -35,6 +35,8 @@ describe('FileListView', () => {
 
       files:[],
 
+      search: 'name',
+
       pagination: {
         page: 1,
         limit: 10,
@@ -45,8 +47,10 @@ describe('FileListView', () => {
       },
 
       fileType: 'image',
+  
+      error: 'New error',
 
-
+      setSearch: vi.fn(),
 
       setPage: vi.fn(),
 
@@ -64,25 +68,33 @@ describe('FileListView', () => {
   it('should render upload button', () => {
     const refreshFiles = vi.fn();
   
+    
     const props = {
       loading: false,
-  
-      files: [],
-  
+
+      files:[],
+
+      search: 'name',
+
       pagination: {
         page: 1,
         limit: 10,
         total: 1,
         totalPages: 1,
         hasNextPage: false,
-        hasPreviousPage: false,
+        hasPreviousPage: false
       },
-  
+
       fileType: 'image',
   
+      error: 'New error',
+
+      setSearch: vi.fn(),
+
       setPage: vi.fn(),
-  
-      refreshFiles,
+
+      refreshFiles: vi.fn(),
+
     };
   
     render(<FileListView {...props} />);
@@ -93,21 +105,33 @@ describe('FileListView', () => {
 
   it('should pass props to FileUploader', () => {
     const refreshFiles = vi.fn();
-  
+    
     const props = {
       loading: false,
-      files: [],
+
+      files:[],
+
+      search: 'name',
+
       pagination: {
         page: 1,
         limit: 10,
         total: 1,
         totalPages: 1,
         hasNextPage: false,
-        hasPreviousPage: false,
+        hasPreviousPage: false
       },
+
       fileType: 'image',
+  
+      error: 'New error',
+
+      setSearch: vi.fn(),
+
       setPage: vi.fn(),
-      refreshFiles,
+
+      refreshFiles: vi.fn(),
+
     };
   
     render(<FileListView {...props} />);
@@ -122,21 +146,33 @@ describe('FileListView', () => {
 
   it('should pass props to Pagination', () => {
     const setPage = vi.fn();
-  
+    
     const props = {
       loading: false,
-      files: [],
+
+      files:[],
+
+      search: 'name',
+
       pagination: {
         page: 1,
         limit: 10,
         total: 1,
         totalPages: 1,
         hasNextPage: false,
-        hasPreviousPage: false,
+        hasPreviousPage: false
       },
+
       fileType: 'image',
-      setPage,
+  
+      error: 'New error',
+
+      setSearch: vi.fn(),
+
+      setPage: vi.fn(),
+
       refreshFiles: vi.fn(),
+
     };
   
     render(<FileListView {...props} />);
@@ -152,21 +188,33 @@ describe('FileListView', () => {
 
   it('should pass props to FileTable', () => {
     const refreshFiles = vi.fn();
-  
+    
     const props = {
       loading: false,
-      files: [],
+
+      files:[],
+
+      search: 'name',
+
       pagination: {
         page: 1,
         limit: 10,
         total: 1,
         totalPages: 1,
         hasNextPage: false,
-        hasPreviousPage: false,
+        hasPreviousPage: false
       },
+
       fileType: 'image',
+  
+      error: 'New error',
+
+      setSearch: vi.fn(),
+
       setPage: vi.fn(),
-      refreshFiles,
+
+      refreshFiles: vi.fn(),
+
     };
   
     render(<FileListView {...props} />);

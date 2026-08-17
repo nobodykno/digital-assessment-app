@@ -28,6 +28,7 @@ describe('FileCount', () => {
     vi.mocked(useFile).mockReturnValue({
       folders,
       loading: false,
+      error:'not fetching'
     });
 
     render(<FileCount />);
