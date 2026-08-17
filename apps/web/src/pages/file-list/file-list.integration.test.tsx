@@ -239,7 +239,7 @@ describe('FileList integration', () => {
 
     const token = localStorage.getItem('token');
 
-    console.log('TEST TOKEN:', token);
+
 
     const response =
       await service.fileDownloadService.downloadVideo(

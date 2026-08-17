@@ -301,80 +301,80 @@ const getQueueSize = async (
 
 
 
-//Test the working of actual autoscaler
+// //Test the working of actual autoscaler
 
 
 
-const getQueueWorkload = async (
-  queue: string,
-): Promise<any> => {
-  const rabbitMQManagementUrl =
-  'http://rabbitmq:15672';
-  // RabbitMQ Management API
-  const url =`${rabbitMQManagementUrl}/api/queues/` +
-  `${encodeURIComponent(rabbitMQConfig.vhost)}/` +
-  `${encodeURIComponent(queue)}`;
+// const getQueueWorkload = async (
+//   queue: string,
+// ): Promise<any> => {
+//   const rabbitMQManagementUrl =
+//   'http://rabbitmq:15672';
+//   // RabbitMQ Management API
+//   const url =`${rabbitMQManagementUrl}/api/queues/` +
+//   `${encodeURIComponent(rabbitMQConfig.vhost)}/` +
+//   `${encodeURIComponent(queue)}`;
 
-  // RabbitMQ username/password
-  const username = 'paramjit';
-  const password = 'MyStrongPassword@123';
+//   // RabbitMQ username/password
+//   const username = 'paramjit';
+//   const password = 'MyStrongPassword@123';
 
-  const credentials =
-    Buffer.from(
-      `${username}:${password}`,
-    ).toString('base64');
+//   const credentials =
+//     Buffer.from(
+//       `${username}:${password}`,
+//     ).toString('base64');
 
-  try {
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        Authorization: `Basic ${credentials}`,
-      },
-    });
+//   try {
+//     const response = await fetch(url, {
+//       method: 'GET',
+//       headers: {
+//         Authorization: `Basic ${credentials}`,
+//       },
+//     });
 
-    if (!response.ok) {
-      throw new Error(
-        `RabbitMQ Management API returned ${response.status}`,
-      );
-    }
+//     if (!response.ok) {
+//       throw new Error(
+//         `RabbitMQ Management API returned ${response.status}`,
+//       );
+//     }
 
-    const data = await response.json();
+//     const data = await response.json();
 
-    const ready =
-      data.messages_ready ?? 0;
+//     const ready =
+//       data.messages_ready ?? 0;
 
-    const unacked =
-      data.messages_unacknowledged ?? 0;
+//     const unacked =
+//       data.messages_unacknowledged ?? 0;
 
-    const total =
-      ready + unacked;
+//     const total =
+//       ready + unacked;
 
-    console.log(
-      `[RabbitMQ] Ready: ${ready}`,
-    );
+//     console.log(
+//       `[RabbitMQ] Ready: ${ready}`,
+//     );
 
-    console.log(
-      `[RabbitMQ] Unacked: ${unacked}`,
-    );
+//     console.log(
+//       `[RabbitMQ] Unacked: ${unacked}`,
+//     );
 
-    console.log(
-      `[RabbitMQ] Total: ${total}`,
-    );
+//     console.log(
+//       `[RabbitMQ] Total: ${total}`,
+//     );
 
-    return {
-      ready,
-      unacked,
-      total,
-    };
-  } catch (error) {
-    console.error(
-      `[RabbitMQ] Failed to get workload for "${queue}"`,
-      error,
-    );
+//     return {
+//       ready,
+//       unacked,
+//       total,
+//     };
+//   } catch (error) {
+//     console.error(
+//       `[RabbitMQ] Failed to get workload for "${queue}"`,
+//       error,
+//     );
 
-    throw error;
-  }
-};
+//     throw error;
+//   }
+// };
 const rabbitMqService = {
     connectRabbitMQ,
     getQueueSize,
@@ -382,6 +382,6 @@ const rabbitMqService = {
     consumeMessage,
     closeRabbitMQ,
     stopConsuming,
-    getQueueWorkload
+
 }
 export default rabbitMqService;

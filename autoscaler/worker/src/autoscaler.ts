@@ -92,9 +92,11 @@ const scaleWorker = async (
   const queueSize =
     await rabbitmq.rabbitmqService.getQueueSize(worker.queue);
 
-  const workload =await rabbitmq.rabbitmqService.getQueueWorkload(worker.queue);
+    /**To test work load of autoscaler */
 
-    console.log(workload)
+  // const workload =await rabbitmq.rabbitmqService.getQueueWorkload(worker.queue);
+
+  //   console.log(workload)
    
   const desiredReplicas =
     calculateDesiredReplicas(

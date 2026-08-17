@@ -57,6 +57,3 @@ import sharp from "sharp";
 
   export default imageService;
 
-function delay(arg0: number) {
-  throw new Error("Function not implemented.");
-}

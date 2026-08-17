@@ -1,4 +1,4 @@
-import MESSAGES from '../constants/message';
+
 
 
 
@@ -15,7 +15,6 @@ const requiredEnv = [
 const missing = requiredEnv.filter((key) => {
   const value = import.meta.env[key];
 
-  console.log(key, value);
 
   return value === undefined || value.trim() === '';
 });
