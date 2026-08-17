@@ -10,26 +10,21 @@ import sharp from "sharp";
  * @param payload - Image processing job received from RabbitMQ.
  */
  const processImageThumbnail = async (payload: IWorkerDTOJob): Promise<void> => {
+
+  try{
     const stream = await serviceStorage.storageService.getObject(payload.objectName);
   
-    const chunks: Buffer[] = [];
-  
-    for await (const chunk of stream) {
-      chunks.push(chunk);
-    }
-  
-    const imageBuffer = Buffer.concat(chunks);
-  
-    const thumbnailBuffer = await sharp(imageBuffer)
-      .resize({
-        width: 300,
-        height: 300,
-        fit: 'inside',
-      })
-      .jpeg({
-        quality: 80,
-      })
-      .toBuffer();
+    const thumbnailBuffer = stream.pipe(
+      sharp()
+        .resize({
+          width: 300,
+          height: 300,
+          fit: "inside",
+        })
+        .jpeg({
+          quality: 80,
+        }),
+    );
   
     const thumbObjectName = payload.objectName.replace(
       'images/',
@@ -45,6 +40,15 @@ import sharp from "sharp";
     );
   
     logsWorker.workerLogger.generateImageThumbnail(thumbObjectName);
+
+  } catch(error){
+    await repository.fileRepository.updateFileStatus(
+      payload.fileId,
+      FILE_CONSTANTS.MESSAGES.FILE_STATUS.FAILED,
+    );
+
+    throw error;
+  }
   };
 
   const imageService = {
@@ -52,3 +56,7 @@ import sharp from "sharp";
   }
 
   export default imageService;
+
+function delay(arg0: number) {
+  throw new Error("Function not implemented.");
+}

@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import service from '../service';
 
 import {
@@ -27,7 +27,7 @@ const ALLOWED_DOCUMENT_TYPES = [
  */
 const useFileUploader = (props: IFileUploaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const controllerRef = useRef<AbortController | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
 
@@ -82,6 +82,10 @@ const useFileUploader = (props: IFileUploaderProps) => {
   const uploadSelectedFiles = async (files: File[]) => {
     const validFiles = validateFiles(files);
 
+    const controller = new AbortController();
+
+    controllerRef.current = controller;
+
     if (!validFiles.length) {
       return;
     }
@@ -90,16 +94,25 @@ const useFileUploader = (props: IFileUploaderProps) => {
       setUploadProgress(0);
 
       if (props.fileType === 'video') {
-        await uploadVideo(validFiles[0]);
+        await uploadVideo(validFiles[0], controller.signal);
       } else {
-        await uploadFiles(validFiles);
+        await uploadFiles(validFiles, controller.signal);
       }
     } catch (error) {
+
       toast.error(
         error instanceof Error
           ? error.message
           : MESSAGES.FILE.FAILED_UPLOAD,
       );
+      if (
+        error instanceof DOMException &&
+        error.name === 'AbortError'
+      ) {
+        toast.error("Upload Cancelled");
+        return;
+      }
+  
     }
   };
 
@@ -160,8 +173,8 @@ const useFileUploader = (props: IFileUploaderProps) => {
   /**
    * Upload Images / Documents.
    */
-  const uploadFiles = async (files: File[]) => {
-    const response = await service.fileUploadService.uploadFiles(files);
+  const uploadFiles = async (files: File[], signal: AbortSignal) => {
+    const response = await service.fileUploadService.uploadFiles(files, signal);
 
     const imageFileIds = files
       .map((file, index) => ({
@@ -172,7 +185,7 @@ const useFileUploader = (props: IFileUploaderProps) => {
       .map((file) => file.fileId);
 
     if (imageFileIds.length > 0) {
-      await pollImages(imageFileIds);
+      await pollImages(imageFileIds, signal);
     }
 
     props.onUploadSuccess();
@@ -181,14 +194,14 @@ const useFileUploader = (props: IFileUploaderProps) => {
   /**
    * Upload Video.
    */
-  const uploadVideo = async (file: File) => {
+  const uploadVideo = async (file: File, signal: AbortSignal) => {
     const request: IInitUploadRequestDto = {
       fileName: file.name,
       mimeType: file.type,
     };
 
     const response =
-      await service.fileUploadService.initializeUpload(request);
+      await service.fileUploadService.initializeUpload(request, signal);
 
     const { fileId, processingId } = response.result;
 
@@ -196,6 +209,7 @@ const useFileUploader = (props: IFileUploaderProps) => {
       file,
       fileId,
       processingId,
+      signal
     );
 
     const payload: ICompleteUploadRequestDto = {
@@ -204,9 +218,9 @@ const useFileUploader = (props: IFileUploaderProps) => {
       parts: uploadedParts,
     };
 
-    await completeUpload(payload);
+    await completeUpload(payload, signal);
 
-    await pollThumbnail(fileId);
+    await pollThumbnail(fileId, signal);
 
     props.onUploadSuccess();
   };
@@ -218,6 +232,7 @@ const useFileUploader = (props: IFileUploaderProps) => {
     file: File,
     fileId: number,
     processingId: number,
+    signal:AbortSignal
   ): Promise<IUploadPartDto[]> => {
     const uploadedParts: IUploadPartDto[] = [];
 
@@ -232,6 +247,15 @@ const useFileUploader = (props: IFileUploaderProps) => {
     ) {
       const start =
         (partNumber - 1) * CHUNK_SIZE;
+
+        if (signal.aborted) {
+
+          toast.error("Upload Cancelled")
+          throw new DOMException(
+            'Upload cancelled',
+            'AbortError',
+          );
+        }
 
       const end = 
       Math.min(
@@ -253,7 +277,7 @@ const useFileUploader = (props: IFileUploaderProps) => {
       };
 
       const response =
-        await service.fileUploadService.uploadPart(req);
+        await service.fileUploadService.uploadPart(req, signal);
 
       uploadedParts.push({
         partNumber,
@@ -280,9 +304,10 @@ const useFileUploader = (props: IFileUploaderProps) => {
    */
   const completeUpload = async (
     request: ICompleteUploadRequestDto,
+    signal:AbortSignal
   ): Promise<ICompleteUploadResponseDto> => {
     setUploadProgress(100);
-    return await service.fileUploadService.completeUpload(request);
+    return await service.fileUploadService.completeUpload(request, signal);
   };
 
   /**
@@ -290,12 +315,13 @@ const useFileUploader = (props: IFileUploaderProps) => {
    */
   const pollThumbnail = async (
     fileId: number,
+    signal: AbortSignal
   ): Promise<void> => {
     return new Promise((resolve, reject) => {
       const interval = setInterval(async () => {
         try {
           const response =
-            await service.fileService.getFileStatus(fileId);
+            await service.fileService.getFileStatus(fileId, signal);
 
           if (response.status === 'Completed') {
             clearInterval(interval);
@@ -311,17 +337,40 @@ const useFileUploader = (props: IFileUploaderProps) => {
           reject(error);
         }
       }, 2000);
+
+      signal.addEventListener(
+        'abort',
+        () => {
+          clearInterval(interval);
+           toast.error("Upload Request cancelled");
+          reject(
+            new DOMException(
+              'Request cancelled',
+              'AbortError',
+            ),
+          );
+        },
+        { once: true },
+      );
     });
   };
 
   /**
    * Poll Multiple Images.
    */
-  const pollImages = async (fileIds: number[]) => {
+  const pollImages = async (fileIds: number[], signal: AbortSignal) => {
     await Promise.all(
-      fileIds.map((fileId) =>pollThumbnail(fileId))
+      fileIds.map((fileId) =>pollThumbnail(fileId, signal))
     );
   };
+
+
+  useEffect(() => {
+    return () => {
+      controllerRef.current?.abort();
+    };
+  }, []);
+
 
   return {
     fileInputRef,

@@ -78,7 +78,7 @@ export const uploadFilesService = async (
 
   for (const file of createdFiles) {
     if (file.mime_type.startsWith('image/')) {
-      shared.rabbitmq.rabbitmqService.publishMessage(shared.rabbitmq.rabbitMQQueues.image, {
+      await  shared.rabbitmq.rabbitmqService.publishMessage(shared.rabbitmq.rabbitMQQueues.image, {
         fileId: file.id,
         userId: request.userId,
         objectName: file.path,
@@ -492,7 +492,7 @@ const updateDbforCompleteUpload = async (request: ICompleteUploadRequestDto, pat
 
   // Publish thumbnail generation job
 
-  shared.rabbitmq.rabbitmqService.publishMessage(shared.rabbitmq.rabbitMQQueues.video, {
+  await  shared.rabbitmq.rabbitmqService.publishMessage(shared.rabbitmq.rabbitMQQueues.video, {
     type: 'thumbnail',
     fileId: request.fileId,
     userId: request.userId,
@@ -630,7 +630,7 @@ const updateDbforDownloadVideo = async (request: IDownloadRequestDto, pathName: 
   }
 
   // Publish RabbitMQ job
-  shared.rabbitmq.rabbitmqService.publishMessage(shared.rabbitmq.rabbitMQQueues.video, {
+  await  shared.rabbitmq.rabbitmqService.publishMessage(shared.rabbitmq.rabbitMQQueues.video, {
     type: 'quality',
     fileId: request.fileId,
     userId: request.userId,

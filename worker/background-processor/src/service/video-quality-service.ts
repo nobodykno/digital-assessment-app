@@ -28,6 +28,11 @@ type VideoQuality = keyof typeof RESOLUTIONS;
  * uploads it to MinIO, updates the database,
  * and removes temporary files.
  */
+
+const TIMEOUT_FFMPEG =
+  Number(process.env.INACTIVITY_TIME) ||
+  30 * 60 * 1000;
+
 const generateVideoQuality = async (
   data: IVideoProcessingJob,
 ): Promise<void> => {
@@ -228,11 +233,55 @@ const transcodeVideo = async (
         outputPath,
       ]);
   
-      ffmpeg.stderr.on('data', (data: Buffer) => {
-         console.log(data);
+
+      let progressBuffer = '';
+
+      let inactivityTimer = setTimeout(() => {
+        ffmpeg.kill('SIGKILL');
+  
+        void unlink(outputPath).catch(() => undefined);
+  
+        reject(
+          new Error(
+            `FFmpeg stalled for 30minutes`,
+          ),
+        );
+      }, TIMEOUT_FFMPEG);
+
+
+      const resetInactivityTimer = (): void => {
+        clearTimeout(inactivityTimer);
+  
+        inactivityTimer = setTimeout(() => {
+          ffmpeg.kill('SIGKILL');
+  
+          void unlink(outputPath).catch(() => undefined);
+  
+          reject(
+            new Error(
+              `FFmpeg stalled for ${TIMEOUT_FFMPEG}ms`,
+            ),
+          );
+        }, TIMEOUT_FFMPEG);
+      };
+
+      ffmpeg.stdout.on('data', (data: Buffer) => {
+        progressBuffer += data.toString();
+  
+        const lines = progressBuffer.split(/\r?\n/);
+  
+        progressBuffer = lines.pop() ?? '';
+  
+        for (const line of lines) {
+          if (line === 'progress=continue') {
+            resetInactivityTimer();
+          }
+        }
       });
+
   
       ffmpeg.on('close', (code) => {
+        clearTimeout(inactivityTimer);
         if (code === 0) {
           logger.workerLogger.generateVideoQuality(
             `${quality} generated: ${outputPath}`,
@@ -247,6 +296,7 @@ const transcodeVideo = async (
       });
   
       ffmpeg.on('error', (error) => {
+        clearTimeout(inactivityTimer);
         reject(error);
       });
     });

@@ -9,6 +9,7 @@ import { httpService } from './base-service';
  */
 const uploadFiles = async (
   files: File[],
+  signal?: AbortSignal
 ): Promise<IUploadFileResponseDto> => {
   const formData = new FormData();
   files.forEach((file) => {
@@ -21,7 +22,8 @@ const uploadFiles = async (
     url,
     method,
     isFormData: true,
-    requiresAuth: true
+    requiresAuth: true,
+    signal: signal
   };
   return await httpService<IUploadFileResponseDto>(request, formData);
 };
@@ -31,6 +33,7 @@ const uploadFiles = async (
  */
 const initializeUpload = async (
   requestBody: IInitUploadRequestDto,
+  signal?: AbortSignal
 ): Promise<IInitUploadResponseDto> => {
   const { url, method } = API.FILE.INIT_UPLOAD;
 
@@ -38,7 +41,8 @@ const initializeUpload = async (
     url,
     method,
     isFormData: false,
-    requiresAuth: true
+    requiresAuth: true,
+    signal: signal
   };
 
   return await httpService<IInitUploadResponseDto>(request, requestBody);
@@ -47,14 +51,15 @@ const initializeUpload = async (
 /**
  * Upload One Chunk
  */
-const uploadPart = async (req: IUploadPartRequestDto): Promise<IUploadPartResponseDto> => {
+const uploadPart = async (req: IUploadPartRequestDto, signal?: AbortSignal): Promise<IUploadPartResponseDto> => {
   const { url, method } = API.FILE.UPLOAD_PART(req.fileId,req.processingId, req.partNumber);
 
   const request = {
     url: url,
     method: method,
     isFormData: true,
-    requiresAuth: true
+    requiresAuth: true,
+    signal: signal
   };
 
  
@@ -65,14 +70,17 @@ const uploadPart = async (req: IUploadPartRequestDto): Promise<IUploadPartRespon
 /**
  * Complete Multipart Upload
  */
-const completeUpload = async (req:ICompleteUploadRequestDto): Promise<ICompleteUploadResponseDto> => {
+const completeUpload = async (req:ICompleteUploadRequestDto,
+  signal?: AbortSignal
+): Promise<ICompleteUploadResponseDto> => {
   const { url, method } = API.FILE.COMPLETE_UPLOAD(req.fileId,req.processingId);
 
   const request: IHeaderDto = {
     url: url,
     method: method,
     isFormData:false,
-    requiresAuth: true
+    requiresAuth: true,
+    signal: signal
   };
 
 

@@ -2,6 +2,7 @@ import { toast } from 'react-toastify';
 import { IFileDownloadProps } from '../props/file-download-props';
 import service from '../service';
 import MESSAGES from '../constants/message';
+import { useEffect, useRef } from 'react';
 
 
 /**
@@ -9,15 +10,24 @@ import MESSAGES from '../constants/message';
  * Business logic to download file
  */
 const useFileDownload = () => {
+  const controllerRef = useRef<AbortController | null>(null);
 
   const downloadFile = async (props: IFileDownloadProps) => {
 
     try {
+      const controller = new AbortController();
+
+      controllerRef.current = controller;
 
       const response =
         await service.fileDownloadService.downloadFile(
           props.fileId,
+          controller.signal,
         );
+
+        if (controller.signal.aborted) {
+          return;
+        }
 
       const link =
         document.createElement('a');
@@ -47,11 +57,21 @@ const useFileDownload = () => {
   ) => {
 
     try {
+
+      const controller = new AbortController();
+
+      controllerRef.current = controller;
+
       const response =
       await service.fileDownloadService.downloadVideo(
         fileId,
         quality,
-      );
+         controller.signal,
+      )
+
+      if (controller.signal.aborted) {
+        return;
+      }
   
     if (response.url) {
       toast.success('Downloading file');
@@ -74,7 +94,11 @@ const useFileDownload = () => {
   }
 
 
-
+  useEffect(() => {
+    return () => {
+      controllerRef.current?.abort();
+    };
+  }, []);
 
   return {
     downloadVideo,

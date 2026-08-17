@@ -7,6 +7,7 @@ export interface IWorkerScalingConfig {
     queueSize: number,
     config: IWorkerScalingConfig,
   ): number => {
+
     if (queueSize <= 0) {
       return config.minReplicas;
     }
@@ -14,6 +15,7 @@ export interface IWorkerScalingConfig {
     const calculatedReplicas = Math.ceil(
       queueSize / config.jobsPerWorker,
     );
+
   
     return Math.max(
       config.minReplicas,

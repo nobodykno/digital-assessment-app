@@ -5,5 +5,6 @@ export interface IHeaderDto {
     method: string,
     isFormData: boolean 
     requiresAuth: boolean;
+    signal?: AbortSignal;
 
 }

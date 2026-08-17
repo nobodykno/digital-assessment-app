@@ -20,15 +20,22 @@ const useFileCount = () => {
 
   const [loading, setLoading] = useState(true);
 
-  const getFolderCount = async () => {
+  const getFolderCount = async (signal?: AbortSignal) => {
     try {
       setLoading(true);
-      const response = await service.fileService.fileCount();
+      const response = await service.fileService.fileCount(signal);
       toast.success(response.message);
       setFolders(response);
      
     } catch (error) {
-      console.error(error);
+      
+      if (
+        error instanceof DOMException &&
+        error.name === 'AbortError'
+      ) {
+        toast.error("Request cancelled")
+        setError("Request cancelled");
+      }
       setError(
         error instanceof Error
           ? error.message
@@ -40,7 +47,12 @@ const useFileCount = () => {
   };
 
   useEffect(() => {
-    getFolderCount();
+    const controller = new AbortController();
+    getFolderCount(controller.signal);
+    return () => {
+      
+      controller.abort();
+    };
   }, []);
 
   return {

@@ -307,10 +307,10 @@ export const downloadVideo = async (
   const response = await service.file.downloadVideo(request);
 
   if (response.status === 'Pending') {
-    return res.status(201).json(response);
+    return res.status(FILE_CONSTANTS.HTTP_STATUS.OK).json(response);
   }
 
-  return res.status(200).json(response);
+  return res.status(FILE_CONSTANTS.HTTP_STATUS.OK).json(response);
 };
 
 /**
@@ -333,8 +333,8 @@ export const downloadFile = async (
   const response = await service.file.downloadFiles(request);
 
   if (response.status === 'Pending') {
-    return res.status(201).json(response);
+    return res.status(FILE_CONSTANTS.HTTP_STATUS.OK).json(response);
   }
 
-  return res.status(200).json(response);
+  return res.status(FILE_CONSTANTS.HTTP_STATUS.OK).json(response);
 };

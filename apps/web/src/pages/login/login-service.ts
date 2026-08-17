@@ -11,6 +11,7 @@ import authValidator from '../../validators/auth-validate-schema';
 
 const login = async (
   request: ILoginRequestDto,
+  signal: AbortSignal,
   loginContext: (token: string) => void,
   navigate: NavigateFunction,
 ): Promise<boolean> => {
@@ -25,7 +26,7 @@ const login = async (
   }
 
   try {
-    const response = await service.authService.login(request);
+    const response = await service.authService.login(request,signal);
 
     loginContext(response.token);
 

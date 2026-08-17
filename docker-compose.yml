@@ -41,8 +41,8 @@ services:
 
     healthcheck:
       test: ["CMD-SHELL", "rabbitmq-diagnostics ping"]
-      interval: 5s
-      timeout: 5s
+      interval: 10s
+      timeout: 30s
       retries: 10
 
   minio:

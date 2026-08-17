@@ -7,6 +7,7 @@ import { httpService } from './base-service';
 
 const downloadFile = async (
   fileId: number,
+  signal: AbortSignal
 ): Promise<IDownloadResponseDto> => {
 
   const { url, method } =
@@ -25,6 +26,7 @@ const downloadFile = async (
 
 const getVideoStatus = async (
   fileId: number,
+  signal: AbortSignal
 ): Promise<IFileStatusResponseDto> => {
   
   const { url, method } =
@@ -34,7 +36,8 @@ const getVideoStatus = async (
     url:url,
     method:method,
     isFormData: false,
-    requiresAuth: true
+    requiresAuth: true,
+    signal: signal
   };
   
   return await httpService<IFileStatusResponseDto>(request);
@@ -42,7 +45,8 @@ const getVideoStatus = async (
 
 const downloadVideo= async (
   fileId: number,
-  quality: string
+  quality: string,
+  signal?: AbortSignal
 ): Promise<IDownloadResponseDto> => {
   
   const { url, method } =
@@ -52,7 +56,8 @@ const downloadVideo= async (
     url: url,
     method: method,
     isFormData: false,
-    requiresAuth: true
+    requiresAuth: true,
+    signal: signal
   };
   
   return await httpService<IDownloadResponseDto>(request);

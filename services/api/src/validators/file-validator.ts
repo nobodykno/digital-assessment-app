@@ -120,12 +120,37 @@ export const getFilesTypeParamsSchema = z.object({
     .regex(FILE_CONSTANTS.MESSAGES.VALIDATION.ALLOWED_FILE_TYPE, FILE_CONSTANTS.MESSAGES.FILE.INVALID_FILE_TYPE_PARAMS),
 });
 
+
+const getFilesQuerySchema = z.object({
+  page: z.coerce
+    .number()
+    .int(FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.INVALID_NUMBER('Page'))
+    .positive(FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.POSITIVE_NUMBER('Page'))
+    .default(1),
+
+  limit: z.coerce
+    .number()
+    .int(FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.INVALID_NUMBER('Limit'))
+    .positive(FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.POSITIVE_NUMBER('Limit'))
+    .max(
+      100,
+      FILE_CONSTANTS.MESSAGES.SCHEMA_VALIDATION.MAX_LENGTH('Limit', 100),
+    )
+    .default(10),
+
+  search: z.string().optional(),
+});
+
+
+
+
 /**
  * Get file type
  */
 
 const getFileTypeParams = {
-  params: getFilesTypeParamsSchema
+  params: getFilesTypeParamsSchema,
+  query: getFilesQuerySchema,
 };
 
 /**

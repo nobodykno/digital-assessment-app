@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import fileService from './file-list.service';
 import {
@@ -6,6 +6,7 @@ import {
   IFileRequestDto,
   IPaginationDto,
 } from '../../model/file/file-model';
+import { toast } from 'react-toastify';
 
 const DEFAULT_PAGINATION: IPaginationDto = {
   page: 1,
@@ -23,10 +24,12 @@ const useFileList = (fileType: string) => {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
 
+  const controllerRef = useRef<AbortController | null>(null);
+
   const [pagination, setPagination] =
     useState<IPaginationDto>(DEFAULT_PAGINATION);
 
-  const getFiles = async () => {
+  const getFiles = async (signal: AbortSignal) => {
     try {
       setLoading(true);
       setError(null);
@@ -38,7 +41,7 @@ const useFileList = (fileType: string) => {
         limit: 10,
       };
 
-      const response = await fileService.getFiles(request);
+      const response = await fileService.getFiles(request,signal);
 
       if (!response.result.length) {
         setFiles([]);
@@ -50,7 +53,13 @@ const useFileList = (fileType: string) => {
       setFiles(response.result);
       setPagination(response.pagination);
     } catch (error) {
-      console.error(error);
+          if (
+            error instanceof DOMException &&
+            error.name === 'AbortError'
+          ) {
+            toast.error("Request cancelled")
+            setError("Request cancelled");
+          }
       setFiles([]);
       setError(
         error instanceof Error
@@ -62,12 +71,34 @@ const useFileList = (fileType: string) => {
     }
   };
 
+  const refreshFiles = async (): Promise<void> => {
+    // Cancel previous refresh request if one exists.
+    controllerRef.current?.abort();
+
+    const controller = new AbortController();
+
+    controllerRef.current = controller;
+
+    await getFiles(controller.signal);
+  };
+
+
   useEffect(() => {
     setPage(1);
   }, [fileType, search]);
 
   useEffect(() => {
-    getFiles();
+    const controller = new AbortController();
+
+    controllerRef.current = controller;
+
+    getFiles(controller.signal);
+
+    return () => {
+      controller.abort();
+    }
+
+    
   }, [fileType, page, search]);
 
   return {
@@ -79,7 +110,7 @@ const useFileList = (fileType: string) => {
     search,
     setSearch,
     setPage,
-    refreshFiles: getFiles,
+    refreshFiles
   };
 };
 

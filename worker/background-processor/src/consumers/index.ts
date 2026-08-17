@@ -1,3 +1,4 @@
+import { gracefulShutdown } from "../utils/graceful-shutdown.js";
 import startImageConsumer from "./image-consumers.js";
 import startVideoWorker from "./video-consumer.js";
 
@@ -19,6 +20,21 @@ const start = async (): Promise<void> => {
       );
   }
 };
+
+
+process.on('SIGTERM', () => {
+  void gracefulShutdown(
+    'SIGTERM',
+    `${process.env.WORKER_TYPE ?? 'Unknown'} worker`,
+  );
+});
+
+process.on('SIGINT', () => {
+  void gracefulShutdown(
+    'SIGINT',
+    `${process.env.WORKER_TYPE ?? 'Unknown'} worker`,
+  );
+});
 
 export default {
   start,

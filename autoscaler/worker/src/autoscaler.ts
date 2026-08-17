@@ -4,8 +4,6 @@ import rabbitmq from "@dam/shared/rabbitmq";
 
 import { autoscalerConfig } from "./config.js";
 
-import { getQueueSize } from "./rabbitmq.js";
-
 import { calculateDesiredReplicas } from "./scaler.js";
 import { IWorker } from "./dto/worker-dto.js";
 
@@ -14,6 +12,11 @@ const docker = new Docker({
 });
 
 const lastScaleDown: Record<string, number> = {};
+
+let autoscalerInterval: string | number | NodeJS.Timeout | null | undefined = null;
+let isShuttingDown = false;
+let isRunning = false;
+let currentRun: Promise<void> | null = null;
 
 
 
@@ -68,10 +71,6 @@ const scaleService = async (
       ?.Replicas ?? 0;
 
   if (currentReplicas === desiredReplicas) {
-    console.log(
-      `${serviceName} already has ${currentReplicas} replicas`,
-    );
-
     return;
   }
 
@@ -83,18 +82,20 @@ const scaleService = async (
       },
     },
   });
-
-  console.log(
-    `{serviceName}: ${currentReplicas} → ${desiredReplicas}`,
-  );
 };
 
 const scaleWorker = async (
   worker: IWorker,
 ): Promise<void> => {
-  const queueSize =
-    await getQueueSize(worker.queue);
 
+
+  const queueSize =
+    await rabbitmq.rabbitmqService.getQueueSize(worker.queue);
+
+  const workload =await rabbitmq.rabbitmqService.getQueueWorkload(worker.queue);
+
+    console.log(workload)
+   
   const desiredReplicas =
     calculateDesiredReplicas(
       queueSize,
@@ -106,6 +107,7 @@ const scaleWorker = async (
           worker.jobsPerWorker,
       },
     );
+
 
 
 
@@ -122,16 +124,15 @@ const scaleWorker = async (
       worker.service,
     );
 
-  console.log(
-    `[${worker.name}] Queue=${queueSize} Current=${currentReplicas} Desired=${desiredReplicas}`,
-  );
+
+ 
 
   /*
    * Scale UP immediately
    */
   if (desiredReplicas > currentReplicas) {
     console.log(
-      `⬆️ Scaling UP ${worker.service}`,
+      `Scaling UP ${worker.service}`,
     );
 
     await scaleService(
@@ -165,7 +166,7 @@ const scaleWorker = async (
     }
 
     console.log(
-      `⬇️ Scaling DOWN ${worker.service}`,
+      `Scaling DOWN ${worker.service}`,
     );
 
     await scaleService(
@@ -180,30 +181,79 @@ const scaleWorker = async (
 
 
 const runAutoscaler = async (): Promise<void> => {
-  console.log(
-    "Checking worker queues...",
-  );
 
-  for (const worker of workers) {
-    try {
-      await scaleWorker(worker);
-    } catch (error) {
-      console.error(
-        `Failed to scale ${worker.service}`,
-        error,
-      );
-    }
+  if (isShuttingDown) {
+    return;
   }
+  try {
+    for (const worker of workers) {
+      try {
+        await scaleWorker(worker);
+      } catch (error) {
+        console.error(
+          `Failed to scale ${worker.service}`,
+          error,
+        );
+      }
+    }
+  } finally {
+    isRunning = false;
+  }
+
+
+
 };
 
 const start = async (): Promise<void> => {
-  await runAutoscaler();
+  currentRun = runAutoscaler();
+  autoscalerInterval = setInterval(()=>{
+   void  runAutoscaler()
+  },autoscalerConfig.intervalMs
+  );
 
-  setInterval(
-    runAutoscaler,
-    autoscalerConfig.intervalMs,
+
+};
+
+
+const shutdown = async (
+  signal: string,
+): Promise<void> => {
+  if (isShuttingDown) {
+    return;
+  }
+
+  isShuttingDown = true;
+
+  console.log(
+    `${signal} received. Shutting down autoscaler...`,
+  );
+
+  if (autoscalerInterval) {
+    clearInterval(autoscalerInterval);
+    autoscalerInterval = null;
+  }
+
+  // Wait for the current scaling cycle to finish.
+  if (currentRun) {
+    await currentRun;
+  }
+
+  await rabbitmq.rabbitmqService.closeRabbitMQ();
+
+  console.log(
+    "Autoscaler shut down gracefully.",
   );
 };
+
+
+process.once("SIGTERM", () => {
+  void shutdown("SIGTERM");
+});
+
+process.once("SIGINT", () => {
+  void shutdown("SIGINT");
+});
+
 
 start().catch((error) => {
   console.error(

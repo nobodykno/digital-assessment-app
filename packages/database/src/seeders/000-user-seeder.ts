@@ -7,12 +7,13 @@ export const up = async ({
 }: {
   context: QueryInterface;
 }): Promise<void> => {
-  const hashedPassword = await bcrypt.hash('Admin@123', 10);
+  const password = process.env.USER_PASSWORD!
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   await queryInterface.bulkInsert('users', [
     {
-      name: 'Admin User',
-      email: 'admin@example.com',
+      name: process.env.USER,
+      email: process.env.USER_MAIL,
       password: hashedPassword,
       createdAt: new Date(),
       updatedAt: new Date(),

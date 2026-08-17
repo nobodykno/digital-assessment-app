@@ -26,6 +26,7 @@ const MESSAGES = {
   FILE_STATUS: {
     PENDING: 'Pending',
     COMPLETED: 'Completed',
+    FAILED: 'Failed'
   },
 
   RABBIT_MQ: {

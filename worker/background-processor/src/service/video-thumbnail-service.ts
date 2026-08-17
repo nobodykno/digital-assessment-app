@@ -11,10 +11,13 @@ import repository from '@dam/database/repositories';
 import logsWorker from "../logger/index.js";
 import logs from "@dam/shared/logs";
 import shared from "@dam/shared";
+import FILE_CONSTANTS from "@dam/shared/constants";
 
 
 
-
+const TIMEOUT_FFMPEG =
+  Number(process.env.INACTIVITY_TIME) ||
+  30 * 60 * 1000;
 
 const generateThumbnail = async (data: IWorkerDTOJob): Promise<string> => {
   let tempVideoPath: string | undefined;
@@ -32,6 +35,8 @@ const generateThumbnail = async (data: IWorkerDTOJob): Promise<string> => {
     await serviceStorage.storageService.upload(objectName, stream, 'image/jpeg');
 
     await repository.fileRepository.updateFileThumbnailImage(data.fileId, objectName);
+
+    await repository.fileRepository.updateFileStatus(data.fileId, FILE_CONSTANTS.MESSAGES.FILE_STATUS.COMPLETED);
 
     logsWorker.workerLogger.generateVideoThumbnail(objectName);
 
@@ -108,8 +113,60 @@ export const createThumbnail = async (
         "2",
         "-update",
         "1",
+        "-progress",
+        "pipe:1",
+  
+        "-stats_period",
+        "10",
+  
+        "-nostats",
         thumbnailPath,
       ]);
+
+           let progressBuffer = '';
+      
+            let inactivityTimer = setTimeout(() => {
+              ffmpeg.kill('SIGKILL');
+        
+              void unlink(thumbnailPath).catch(() => undefined);
+        
+              reject(
+                new Error(
+                  `FFmpeg stalled for 30minutes`,
+                ),
+              );
+            }, TIMEOUT_FFMPEG);
+      
+      
+            const resetInactivityTimer = (): void => {
+              clearTimeout(inactivityTimer);
+        
+              inactivityTimer = setTimeout(() => {
+                ffmpeg.kill('SIGKILL');
+        
+                void unlink(thumbnailPath).catch(() => undefined);
+        
+                reject(
+                  new Error(
+                    `FFmpeg stalled for ${TIMEOUT_FFMPEG}ms`,
+                  ),
+                );
+              }, TIMEOUT_FFMPEG);
+            };
+
+            ffmpeg.stdout.on("data", (data: Buffer) => {
+              progressBuffer += data.toString();
+        
+              const lines = progressBuffer.split(/\r?\n/);
+        
+              progressBuffer = lines.pop() ?? "";
+        
+              for (const line of lines) {
+                if (line === "progress=continue") {
+                  resetInactivityTimer();
+                }
+              }
+            });
   
       ffmpeg.stderr.on(
         "data",
@@ -121,10 +178,12 @@ export const createThumbnail = async (
       );
   
       ffmpeg.on("error", (error) => {
+        clearTimeout(inactivityTimer);
         reject(error);
       });
   
       ffmpeg.on("close", (code) => {
+        clearTimeout(inactivityTimer);
         if (code === 0) {
           console.log(
             "Thumbnail created:",

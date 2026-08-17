@@ -5,14 +5,15 @@ import { httpService } from './base-service';
 
 
 
-const fileCount = async (): Promise<IFileCountModelResponseDto> => {
+const fileCount = async ( signal?: AbortSignal): Promise<IFileCountModelResponseDto> => {
   const { url, method } = API.FILE.FILE_COUNT;
 
   const request:IHeaderDto ={
     url:url,
     method:method,
     isFormData:false,
-    requiresAuth: true
+    requiresAuth: true,
+    signal: signal
   };
   const response =  await httpService<IFileCountModelResponseDto>(request);
 
@@ -22,6 +23,7 @@ const fileCount = async (): Promise<IFileCountModelResponseDto> => {
 
 const getAllFilesTypes = async (
   request: IFileRequestDto,
+  signal?: AbortSignal
 ): Promise<IFileListResponseDto> => {
 
   const { url, method } =
@@ -36,7 +38,8 @@ const getAllFilesTypes = async (
     url: url,
     method: method,
     isFormData: false,
-    requiresAuth: true
+    requiresAuth: true,
+    signal:signal
 
   };
 
@@ -44,14 +47,19 @@ const getAllFilesTypes = async (
 };
 
 
-const getFileStatus = async (fileId:number): Promise<IFileStatusResponseDto> => {
+const getFileStatus = async (
+  fileId:number,
+  signal: AbortSignal
+
+): Promise<IFileStatusResponseDto> => {
   const { url, method } = API.FILE.GET_FILES_STATUS(fileId);
 
   const request:IHeaderDto ={
     url:url,
     method:method,
     isFormData:false,
-    requiresAuth: true
+    requiresAuth: true,
+    signal: signal
   };
   const result =  await httpService<IFileStatusResponseDto>(request);
 
@@ -65,6 +73,7 @@ const getFileStatus = async (fileId:number): Promise<IFileStatusResponseDto> => 
 
 const deleteFile = async (
   fileId: number,
+  signal?: AbortSignal
 ): Promise<void> => {
   const { url, method } =
     API.FILE.DELETE_FILE(fileId);
@@ -73,7 +82,8 @@ const deleteFile = async (
     url:url,
     method:method,
     isFormData: false,
-    requiresAuth: true
+    requiresAuth: true,
+    signal:signal
 
   };
 

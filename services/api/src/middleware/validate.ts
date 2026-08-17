@@ -15,7 +15,7 @@ import type { NextFunction, Request, Response } from 'express';
 const validate =
   (schema: ValidationSchema) =>
   (req: Request, res: Response, next: NextFunction): void => {
-    const sections = ['body', 'params'] as const;
+    const sections = ['body', 'params', 'query'] as const;
 
     for (const section of sections) {
       const validator = schema[section];
@@ -38,7 +38,12 @@ const validate =
         );
       }
 
-      req[section] = result.data;
+    
+      if (section === 'query') {
+        Object.assign(req.query, result.data);
+      } else {
+        req[section] = result.data;
+      }
     }
 
     next();

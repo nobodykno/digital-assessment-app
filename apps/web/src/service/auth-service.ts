@@ -13,13 +13,14 @@ import { httpService } from './base-service';
  * 
  */
 
-const login = async (payload: ILoginRequestDto) => {
+const login = async (payload: ILoginRequestDto, signal: AbortSignal) => {
   const { url, method } = API.AUTH.LOGIN;
     const request: IHeaderDto = {
       url: url,
       method: method,
       isFormData: false,
-      requiresAuth: false
+      requiresAuth: false,
+      signal: signal
     };
 
       return await httpService<ILoginResponseDto>(request,payload);
@@ -32,14 +33,15 @@ const login = async (payload: ILoginRequestDto) => {
  * @returns success when user is registered 
  */
 
-const register = async (payload: IRegisterRequestDto) => {
+const register = async (payload: IRegisterRequestDto, signal: AbortSignal) => {
   const { url, method } = API.AUTH.REGISTER;
 
   const request: IHeaderDto = {
     url: url,
     method: method,
     isFormData: false,
-    requiresAuth: false
+    requiresAuth: false,
+    signal: signal
   };
 
     return await httpService<IRegisterResponseDto>(request,payload)

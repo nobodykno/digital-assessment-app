@@ -5,6 +5,7 @@ node_modules
 dist
 coverage
 
+.env*
 **/test
 **/*.test.ts
 **/*.spec.ts

@@ -1,7 +1,7 @@
 
 
 import type { Readable } from 'stream';
-import minioClient from './minio.js';
+import { minioClient } from './minio.js';
 import { IUploadResult } from '../dto/upload-file-dto.js';
 
 

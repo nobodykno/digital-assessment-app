@@ -103,7 +103,6 @@ export const fileHandlers = [
 
 
   http.post('*/v1/api/files', async ({ request }) => {
-    console.log('🔥 UPLOAD HANDLER CALLED');
   
     if (!checkAuthorization(request)) {
       return HttpResponse.json(

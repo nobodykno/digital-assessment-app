@@ -12,6 +12,7 @@ import authValidator from '../../validators/auth-validate-schema';
 
 const register = async (
   request: IRegisterRequestDto,
+  signal: AbortSignal
 ): Promise<boolean> => {
   const result =
     authValidator.createUserSchema.safeParse(request);
@@ -25,7 +26,7 @@ const register = async (
   }
 
   try {
-    await service.authService.register(request);
+    await service.authService.register(request, signal);
 
     toast.success(MESSAGES.AUTH.REGISTER_SUCCESS);
 

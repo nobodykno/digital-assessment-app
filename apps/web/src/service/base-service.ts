@@ -37,6 +37,7 @@ export const httpService = async <T>(
   const options: RequestInit = {
     method: request.method,
     headers: getHeaders(request.isFormData,body),
+    signal: request.signal
   };
 
   if (body) {
